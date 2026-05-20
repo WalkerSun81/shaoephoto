@@ -1,0 +1,41 @@
+/* ============================================
+   ShaoePhoto - 样式
+   ============================================ */
+
+:root {
+    --cos-bg: #1a1520;
+    --cos-world: #1e1828;
+    --cos-surface: rgba(45, 38, 55, 0.92);
+    --cos-text: #f0e6d8;
+    --cos-text-dim: #8a7a6a;
+    --cos-accent: #f0a050;
+    --cos-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --cos-radius-sm: 10px;
+}
+
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: var(--cos-font);
+    font-size: 13px;
+    color: var(--cos-text);
+    background: var(--cos-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+#cos-world {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    background: var(--cos-world);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,220,180,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,220,180,0.2); }
