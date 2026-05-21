@@ -1,5 +1,5 @@
 /**
- * VS5.13 - 启动入口
+ * VD5.21 - 启动入口
  */
 (function() {
     document.addEventListener('DOMContentLoaded', function() {

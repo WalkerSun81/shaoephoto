@@ -1,5 +1,5 @@
 /**
- * VS5.13 PrefabMaker - Cocos Creator 食物预制体生成工具
+ * VD5.21 PrefabMaker - Cocos Creator 食物预制体生成工具
  *
  * 核心工作流：
  *   上传素材 → 精灵检测 + 碰撞体生成 → 设置参数 → 输出预制体
@@ -50,6 +50,9 @@ var PrefabMaker = {
             colliderEditActive: false,
             colliderDraggedPoints: null,
             colliderDragIdx: -1,
+            colliderDragMode: null,
+            colliderDragCorner: -1,
+            colliderDragStart: null,
             // 预制体输出
             exportConfig: {
                 foodGroup: 1,
@@ -79,6 +82,14 @@ var PrefabMaker = {
             colliderCustomPoints: {},
             colliderEditActive: false,
             colliderTargetCount: 6,
+            colliderType: 'auto',
+            colliderBoxCustom: {},
+            colliderCircleCustom: {},
+            clickAreaScale: 1.0,
+            clickAreaRotation: 0,
+            colliderDragMode: null,
+            colliderDragCorner: -1,
+            colliderDragStart: null,
             overlayVisible: true
         };
     },
@@ -150,7 +161,7 @@ var PrefabMaker = {
                         '<div id="ttHeaderProgressBar" style="height:100%;width:0%;background:#00c853;border-radius:3px;transition:width 0.2s;"></div>' +
                     '</div>' +
                 '</div>' +
-                '<span style="font-size:16px;font-weight:bold;color:#eee;flex-shrink:0;">VS5.13 Prefab Maker</span>' +
+                '<span style="font-size:16px;font-weight:bold;color:#eee;flex-shrink:0;">VD5.21 Prefab Maker</span>' +
             '</div>';
         overlay.appendChild(header);
 
@@ -186,13 +197,17 @@ var PrefabMaker = {
             if (savedVal !== null) r.value = savedVal;
             var valEl = overlay.querySelector('#' + r.id + 'Val') || overlay.querySelector('[data-range-val="' + r.id + '"]');
             if (valEl) {
-                valEl.textContent = r.id === 'colliderScale' ? r.value + '%' : r.value;
+                valEl.textContent = r.id === 'colliderScale' ? r.value + '%' : (r.id === 'exportRotation' ? r.value + '°' : r.value);
                 r.addEventListener('input', function() {
-                    valEl.textContent = this.id === 'colliderScale' ? this.value + '%' : this.value;
+                    valEl.textContent = this.id === 'colliderScale' ? this.value + '%' : (this.id === 'exportRotation' ? this.value + '°' : this.value);
                     localStorage.setItem('vs5_pref_' + this.id, this.value);
-                    if ((this.id === 'colliderSimplify' || this.id === 'colliderScale')) {
+                    if ((this.id === 'colliderSimplify' || this.id === 'colliderScale' || this.id === 'exportClickAreaScale' || this.id === 'exportRotation')) {
                         var e = self._getCurrentEntry();
-                        if (e && e.regions.length > 0) self._drawOverlay();
+                        if (e) {
+                            if (this.id === 'exportClickAreaScale') e.clickAreaScale = parseFloat(this.value) || 1.0;
+                            if (this.id === 'exportRotation') e.clickAreaRotation = parseInt(this.value) || 0;
+                            if (e.regions.length > 0) self._drawOverlay();
+                        }
                     }
                 });
             }
@@ -203,7 +218,17 @@ var PrefabMaker = {
         if (colliderTypeSel) {
             colliderTypeSel.addEventListener('change', function() {
                 var e = self._getCurrentEntry();
-                if (e && e.regions.length > 0) self._drawOverlay();
+                if (e) {
+                    e.colliderType = this.value;
+                    if (e.regions.length > 0) {
+                        // 切换类型时自动进入编辑模式
+                        if (!e.colliderEditActive) {
+                            self._toggleColliderEdit();
+                        } else {
+                            self._drawOverlay();
+                        }
+                    }
+                }
             });
         }
     },
@@ -253,10 +278,10 @@ var PrefabMaker = {
                 '<div class="tt-input-group">' +
                     '<label>碰撞体类型</label>' +
                     '<select id="colliderType">' +
-                        '<option value="polygon" selected>多边形 (Polygon)</option>' +
+                        '<option value="polygon">多边形 (Polygon)</option>' +
                         '<option value="box">方形 (Box)</option>' +
                         '<option value="circle">圆形 (Circle)</option>' +
-                        '<option value="auto">自动检测</option>' +
+                        '<option value="auto" selected>自动检测</option>' +
                     '</select>' +
                 '</div>' +
                 '<div class="tt-input-group">' +
@@ -266,7 +291,7 @@ var PrefabMaker = {
                         '<span class="tt-range-val" data-range-val="colliderSimplify">6</span>' +
                     '</div>' +
                 '</div>' +
-                '<button class="tt-btn tt-btn-sm" data-action="toggleColliderEdit" style="margin-top:4px">✏️ 编辑顶点（拖拽调整）</button>' +
+                '<button class="tt-btn tt-btn-sm" data-action="toggleColliderEdit" style="margin-top:4px">编辑</button>' +
             '</div>' +
 
             '<!-- EXPORT -->' +
@@ -293,7 +318,10 @@ var PrefabMaker = {
                 '</div>' +
                 '<div class="tt-input-group">' +
                     '<label>clickArea 旋转</label>' +
-                    '<input type="number" id="exportRotation" value="0" min="-180" max="180">' +
+                    '<div class="tt-range-row">' +
+                        '<input type="range" id="exportRotation" min="-180" max="180" value="0">' +
+                        '<span class="tt-range-val" data-range-val="exportRotation">0°</span>' +
+                    '</div>' +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:6px;margin-top:8px">' +
                     '<button class="tt-btn tt-btn-primary" data-action="exportSelectDir" style="flex:1;margin-top:0">📁 选择目录</button>' +
@@ -429,6 +457,41 @@ var PrefabMaker = {
         document.addEventListener('keydown', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             if (e.key === 'Escape') { self._destroy(); return; }
+
+            // 碰撞体类型快捷键: 1=多边形 2=方形 3=圆形  ~=轮换
+            var typeKeys = { '1': 'polygon', '2': 'box', '3': 'circle' };
+            if (typeKeys[e.key] || e.code === 'Backquote') {
+                var ctEntry = self._getCurrentEntry();
+                if (ctEntry) {
+                    var newType;
+                    if (typeKeys[e.key]) {
+                        newType = typeKeys[e.key];
+                    } else {
+                        var cycle = ['polygon', 'box', 'circle'];
+                        var cur = ctEntry.colliderType || 'auto';
+                        var idx = cycle.indexOf(cur);
+                        newType = cycle[(idx + 1) % cycle.length];
+                    }
+                    ctEntry.colliderType = newType;
+                    var ctSel3 = self._q('#colliderType');
+                    if (ctSel3) ctSel3.value = newType;
+                    if (!ctEntry.colliderEditActive) self._toggleColliderEdit();
+                    else self._drawOverlay();
+                    e.preventDefault();
+                }
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                var list = self.state.imageList;
+                if (list.length > 1) {
+                    var nextIdx = (self.state.activeImageIndex + 1) % list.length;
+                    self._activateImage(nextIdx);
+                    e.preventDefault();
+                }
+                return;
+            }
+
             if ((e.key === 'Delete' || e.key === 'Backspace')) {
                 var entry = self._getCurrentEntry();
                 if (!entry || entry.selectedRegion < 0) return;
@@ -478,7 +541,9 @@ var PrefabMaker = {
             img.onload = function() {
                 var entry = self._makeImageEntry(file, img, file.name, foodId, morphIdx);
                 self.state.imageList.push(entry);
-                self.state.activeImageIndex = self.state.imageList.length - 1;
+                // 按 foodId 排序，morphIndex 为次要排序
+                self.state.imageList.sort(function(a, b) { return a.foodId - b.foodId || a.morphIndex - b.morphIndex; });
+                self.state.activeImageIndex = self.state.imageList.indexOf(entry);
                 var empty = self._q('#ttEmptyState');
                 if (empty) empty.style.display = 'none';
                 self._activateImage(self.state.activeImageIndex);
@@ -492,21 +557,33 @@ var PrefabMaker = {
 
     _activateImage: function(index) {
         if (index < 0 || index >= this.state.imageList.length) return;
-        // 保存当前 entry 的顶点数设置到滑块
+        // 保存当前 entry 的设置到 UI 控件
         var oldEntry = this._getCurrentEntry();
         if (oldEntry) {
             var slider = this._q('#colliderSimplify');
             if (slider) oldEntry.colliderTargetCount = parseInt(slider.value) || 6;
+            var ctSel = this._q('#colliderType');
+            if (ctSel) oldEntry.colliderType = ctSel.value;
+            var clickScaleEl = this._q('#exportClickAreaScale');
+            if (clickScaleEl) oldEntry.clickAreaScale = parseFloat(clickScaleEl.value) || 1.0;
+            var clickRotEl = this._q('#exportRotation');
+            if (clickRotEl) oldEntry.clickAreaRotation = parseInt(clickRotEl.value) || 0;
         }
         this.state.activeImageIndex = index;
         var entry = this.state.imageList[index];
-        // 恢复当前 entry 的顶点数设置到滑块
+        // 恢复当前 entry 的设置到 UI 控件
         var slider = this._q('#colliderSimplify');
         if (slider) {
             slider.value = entry.colliderTargetCount || 6;
             var valEl = this._overlay ? this._overlay.querySelector('[data-range-val="colliderSimplify"]') : null;
             if (valEl) valEl.textContent = slider.value;
         }
+        var ctSel2 = this._q('#colliderType');
+        if (ctSel2) ctSel2.value = entry.colliderType || 'auto';
+        var clickScaleEl2 = this._q('#exportClickAreaScale');
+        if (clickScaleEl2) { clickScaleEl2.value = entry.clickAreaScale || 1.0; localStorage.setItem('vs5_pref_exportClickAreaScale', clickScaleEl2.value); var csv = this._overlay ? this._overlay.querySelector('[data-range-val="exportClickAreaScale"]') : null; if (csv) csv.textContent = clickScaleEl2.value; }
+        var clickRotEl2 = this._q('#exportRotation');
+        if (clickRotEl2) { clickRotEl2.value = entry.clickAreaRotation || 0; localStorage.setItem('vs5_pref_exportRotation', clickRotEl2.value); var crv = this._overlay ? this._overlay.querySelector('[data-range-val="exportRotation"]') : null; if (crv) crv.textContent = clickRotEl2.value + '°'; }
         var wrapper = this._q('#ttCanvasWrapper');
         var hint = this._q('#ttCanvasHint');
         var infoBar = this._q('#ttInfoBar');
@@ -529,7 +606,7 @@ var PrefabMaker = {
         this._drawOverlay();
         this._updateRegionListUI();
         this._updateThumbnailListUI();
-        // 自动开启编辑顶点
+        // 自动开启编辑
         if (entry.regions.length > 0 && !entry.colliderEditActive) {
             this._toggleColliderEdit();
         }
@@ -544,9 +621,12 @@ var PrefabMaker = {
         if (rPanel) rPanel.style.display = 'flex';
         if (countEl) countEl.textContent = list.length;
         container.innerHTML = '';
-        // 按文件名排序
-        var sorted = list.slice().sort(function(a, b) { return a.fileName.localeCompare(b.fileName); });
         var self = this;
+        // 按 foodId 数字排序，morphIndex 次要
+        var curEntry = self.state.imageList[self.state.activeImageIndex];
+        self.state.imageList.sort(function(a, b) { return a.foodId - b.foodId || a.morphIndex - b.morphIndex; });
+        if (curEntry) self.state.activeImageIndex = self.state.imageList.indexOf(curEntry);
+        var sorted = self.state.imageList;
         for (var i = 0; i < sorted.length; i++) {
             (function(idx, entry) {
                 var div = document.createElement('div');
@@ -770,8 +850,8 @@ var PrefabMaker = {
             ctx.fillText(label, bx, by - 8);
 
             // clickArea 预览（始终显示，蓝色半透明旋转框 = Cocos 点击区域）
-            var clickScale = parseFloat(this._q('#exportClickAreaScale').value) || 1.0;
-            var rotZ = parseFloat(this._q('#exportRotation').value) || 0;
+            var clickScale = (entry.clickAreaScale != null) ? entry.clickAreaScale : (parseFloat(this._q('#exportClickAreaScale').value) || 1.0);
+            var rotZ = (entry.clickAreaRotation != null) ? entry.clickAreaRotation : (parseFloat(this._q('#exportRotation').value) || 0);
             var cw = Math.round(b.w * clickScale);
             var ch = Math.round(b.h * clickScale);
             var cxc = ox + b.x * s + b.w * s / 2;
@@ -791,53 +871,106 @@ var PrefabMaker = {
             ctx.font = '10px sans-serif';
             ctx.fillText('ClickArea ' + cw + '-' + ch + 'px 旋转' + rotZ + '°', bx, by - 20);
 
-            // 碰撞体顶点预览
+            // 碰撞体预览（根据类型渲染）
             if (entry.regions.length > 0) {
-                var colliderPoints = [];
-                try { colliderPoints = this._extractColliderPoints(sr); } catch(e) { console.error('collider error', e); }
-                if (colliderPoints.length >= 3) {
-                    var centerX = b.x + b.w / 2;
-                    var centerY = b.y + b.h / 2;
-                    var isEdit = entry.colliderEditActive;
-                    ctx.strokeStyle = '#00c853';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([]);
-                    ctx.beginPath();
-                    for (var pi = 0; pi < colliderPoints.length; pi++) {
-                        var px2 = ox + (centerX + colliderPoints[pi].x) * s;
-                        var py2 = oy + (centerY - colliderPoints[pi].y) * s;
-                        if (pi === 0) ctx.moveTo(px2, py2);
-                        else ctx.lineTo(px2, py2);
-                    }
-                    ctx.closePath();
-                    ctx.stroke();
-                    // 顶点圆点 + 始终显示编号
-                    colliderPoints.forEach(function(pt, idx) {
-                        var cx3 = ox + (centerX + pt.x) * s;
-                        var cy3 = oy + (centerY - pt.y) * s;
-                        var radius = isEdit ? 7 : 5;
-                        ctx.fillStyle = '#00c853';
-                        ctx.beginPath();
-                        ctx.arc(cx3, cy3, radius, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.fillStyle = '#fff';
-                        ctx.beginPath();
-                        ctx.arc(cx3, cy3, isEdit ? 4 : 3, 0, Math.PI * 2);
-                        ctx.fill();
-                        // 始终显示编号
-                        ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 10px sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(idx + 1, cx3, cy3 + 3);
-                        ctx.textAlign = 'start';
-                    });
-                    // 编辑模式下显示提示
+                var colliderType = this._q('#colliderType').value;
+                if (colliderType === 'auto' && sr) {
+                    colliderType = this._detectColliderType(sr);
+                }
+                var centerX = b.x + b.w / 2;
+                var centerY = b.y + b.h / 2;
+                var isEdit = entry.colliderEditActive;
+                ctx.strokeStyle = '#00c853';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([]);
+
+                if (colliderType === 'box') {
+                    var boxParams = this._getBoxParams(entry, sr);
+                    var boxCX = centerX + boxParams.ox;
+                    var boxCY = centerY - boxParams.oy;
+                    var bx0 = ox + (boxCX - boxParams.w / 2) * s;
+                    var by0 = oy + (boxCY - boxParams.h / 2) * s;
+                    ctx.strokeRect(bx0, by0, boxParams.w * s, boxParams.h * s);
                     if (isEdit) {
-                        ctx.fillStyle = 'rgba(0,200,83,0.15)';
-                        ctx.fillRect(bx, by + bh + 6, 160, 18);
                         ctx.fillStyle = '#00c853';
-                        ctx.font = '10px sans-serif';
-                        ctx.fillText('拖拽绿色圆点调整碰撞体', bx + 4, by + bh + 18);
+                        for (var hci = 0; hci < 4; hci++) {
+                            var hpt = this._getBoxCornerImagePos(sr, boxParams, hci);
+                            ctx.fillRect(ox + hpt.x * s - 4, oy + hpt.y * s - 4, 8, 8);
+                        }
+                    }
+                    var label = 'BoxCollider ' + Math.round(boxParams.w) + 'x' + Math.round(boxParams.h);
+                    if (boxParams.ox !== 0 || boxParams.oy !== 0) label += ' 偏移(' + boxParams.ox + ',' + boxParams.oy + ')';
+                    ctx.fillStyle = '#00c853';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.fillText(label, bx + 4, by + bh + 14);
+                } else if (colliderType === 'circle') {
+                    var circleParams = this._getCircleParams(entry, sr);
+                    var circCX = centerX + circleParams.ox;
+                    var circCY = centerY - circleParams.oy;
+                    ctx.beginPath();
+                    ctx.arc(ox + circCX * s, oy + circCY * s, circleParams.r * s, 0, Math.PI * 2);
+                    ctx.stroke();
+                    // 十字参考线
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(ox + circCX * s - circleParams.r * s, oy + circCY * s);
+                    ctx.lineTo(ox + circCX * s + circleParams.r * s, oy + circCY * s);
+                    ctx.moveTo(ox + circCX * s, oy + circCY * s - circleParams.r * s);
+                    ctx.lineTo(ox + circCX * s, oy + circCY * s + circleParams.r * s);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    if (isEdit) {
+                        // 黄色半径 handle（右侧边缘）
+                        ctx.fillStyle = '#ffd600';
+                        ctx.fillRect(ox + (circCX + circleParams.r) * s - 4, oy + circCY * s - 4, 8, 8);
+                    }
+                    var label2 = 'CircleCollider r=' + Math.round(circleParams.r);
+                    if (circleParams.ox !== 0 || circleParams.oy !== 0) label2 += ' 偏移(' + circleParams.ox + ',' + circleParams.oy + ')';
+                    ctx.fillStyle = '#00c853';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.fillText(label2, bx + 4, by + bh + 14);
+                } else {
+                    // 多边形预览
+                    var colliderPoints = [];
+                    try { colliderPoints = this._extractColliderPoints(sr); } catch(e) { console.error('collider error', e); }
+                    if (colliderPoints.length >= 3) {
+                        ctx.beginPath();
+                        for (var pi = 0; pi < colliderPoints.length; pi++) {
+                            var px2 = ox + (centerX + colliderPoints[pi].x) * s;
+                            var py2 = oy + (centerY - colliderPoints[pi].y) * s;
+                            if (pi === 0) ctx.moveTo(px2, py2);
+                            else ctx.lineTo(px2, py2);
+                        }
+                        ctx.closePath();
+                        ctx.stroke();
+                        // 顶点圆点 + 始终显示编号
+                        colliderPoints.forEach(function(pt, idx) {
+                            var cx3 = ox + (centerX + pt.x) * s;
+                            var cy3 = oy + (centerY - pt.y) * s;
+                            var r = isEdit ? 7 : 5;
+                            ctx.fillStyle = '#00c853';
+                            ctx.beginPath();
+                            ctx.arc(cx3, cy3, r, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.fillStyle = '#fff';
+                            ctx.beginPath();
+                            ctx.arc(cx3, cy3, isEdit ? 4 : 3, 0, Math.PI * 2);
+                            ctx.fill();
+                            // 始终显示编号
+                            ctx.fillStyle = '#fff';
+                            ctx.font = 'bold 10px sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(idx + 1, cx3, cy3 + 3);
+                            ctx.textAlign = 'start';
+                        });
+                        // 编辑模式下显示提示
+                        if (isEdit) {
+                            ctx.fillStyle = 'rgba(0,200,83,0.15)';
+                            ctx.fillRect(bx, by + bh + 6, 160, 18);
+                            ctx.fillStyle = '#00c853';
+                            ctx.font = '10px sans-serif';
+                            ctx.fillText('拖拽绿色圆点调整碰撞体', bx + 4, by + bh + 18);
+                        }
                     }
                 }
             }
@@ -1101,64 +1234,102 @@ var PrefabMaker = {
         var my = (e.clientY - rect.top) * ratioY - (entry._imgOy || 0);
         var s = this.state.scale;
 
-        // 碰撞体编辑模式：双击处理 + 拖拽
+        // 碰撞体编辑模式
         if (entry.colliderEditActive && entry.selectedRegion >= 0) {
-            var hitIdx = this._hitTestColliderPoint(mx, my);
             var now = Date.now();
             var sr = entry.regions[entry.selectedRegion];
+            var ct = this._q('#colliderType').value;
+            if (ct === 'auto' && sr) ct = this._detectColliderType(sr);
 
-            // 双击顶点 → 删除
-            if (hitIdx >= 0) {
-                if (this.state._lastClickTime && (now - this.state._lastClickTime) < 350 && hitIdx === this.state._lastClickIdx) {
-                    var pts = this._extractColliderPoints(sr);
-                    if (pts.length > 3) {
-                        pts.splice(hitIdx, 1);
-                        entry.colliderCustomPoints[sr.id] = pts;
-                        this._syncColliderSlider(pts.length);
-                        this._drawOverlay();
-                        this._showToast('已删除顶点 #' + (hitIdx + 1));
-                    } else {
-                        this._showToast('至少保留 3 个顶点', true);
+            if (ct === 'polygon') {
+                var hitIdx = this._hitTestColliderPoint(mx, my);
+                // 双击顶点 → 删除
+                if (hitIdx >= 0) {
+                    if (this.state._lastClickTime && (now - this.state._lastClickTime) < 350 && hitIdx === this.state._lastClickIdx) {
+                        var pts = this._extractColliderPoints(sr);
+                        if (pts.length > 3) {
+                            pts.splice(hitIdx, 1);
+                            entry.colliderCustomPoints[sr.id] = pts;
+                            this._syncColliderSlider(pts.length);
+                            this._drawOverlay();
+                            this._showToast('已删除顶点 #' + (hitIdx + 1));
+                        } else {
+                            this._showToast('至少保留 3 个顶点', true);
+                        }
+                        this.state._lastClickTime = 0;
+                        this.state._lastClickIdx = -1;
+                        return;
                     }
-                    this.state._lastClickTime = 0;
-                    this.state._lastClickIdx = -1;
+                    this.state._lastClickTime = now;
+                    this.state._lastClickIdx = hitIdx;
+                    entry.colliderDragIdx = hitIdx;
+                    entry.colliderDragMode = 'vertex';
+                    this._overlayCanvas.style.cursor = 'grabbing';
                     return;
                 }
-                this.state._lastClickTime = now;
-                this.state._lastClickIdx = hitIdx;
-                entry.colliderDragIdx = hitIdx;
-                this._overlayCanvas.style.cursor = 'grabbing';
-                return;
-            }
-
-            // 双击线段 → 插入顶点
-            var segHit = this._hitTestColliderSegment(mx, my);
-            if (segHit) {
-                if (this.state._lastSegClickTime && (now - this.state._lastSegClickTime) < 350 && segHit.segIdx === this.state._lastSegIdx) {
-                    var pts2 = this._extractColliderPoints(sr);
-                    if (pts2.length < 8) {
-                        pts2.splice(segHit.segIdx + 1, 0, segHit.insertPt);
-                        entry.colliderCustomPoints[sr.id] = pts2;
-                        this._syncColliderSlider(pts2.length);
-                        this._drawOverlay();
-                        this._showToast('已插入顶点 #' + (segHit.segIdx + 2));
-                    } else {
-                        this._showToast('最多 8 个顶点', true);
+                // 双击线段 → 插入顶点
+                var segHit = this._hitTestColliderSegment(mx, my);
+                if (segHit) {
+                    if (this.state._lastSegClickTime && (now - this.state._lastSegClickTime) < 350 && segHit.segIdx === this.state._lastSegIdx) {
+                        var pts2 = this._extractColliderPoints(sr);
+                        if (pts2.length < 8) {
+                            pts2.splice(segHit.segIdx + 1, 0, segHit.insertPt);
+                            entry.colliderCustomPoints[sr.id] = pts2;
+                            this._syncColliderSlider(pts2.length);
+                            this._drawOverlay();
+                            this._showToast('已插入顶点 #' + (segHit.segIdx + 2));
+                        } else {
+                            this._showToast('最多 8 个顶点', true);
+                        }
+                        this.state._lastSegClickTime = 0;
+                        this.state._lastSegIdx = -1;
+                        return;
                     }
-                    this.state._lastSegClickTime = 0;
-                    this.state._lastSegIdx = -1;
+                    this.state._lastSegClickTime = now;
+                    this.state._lastSegIdx = segHit.segIdx;
                     return;
                 }
-                this.state._lastSegClickTime = now;
-                this.state._lastSegIdx = segHit.segIdx;
-                return;
+                // 单击空白处清除双击状态
+                this.state._lastClickTime = 0;
+                this.state._lastClickIdx = -1;
+                this.state._lastSegClickTime = 0;
+                this.state._lastSegIdx = -1;
+            } else if (ct === 'box') {
+                var boxCorner = this._hitTestBoxCorner(mx, my);
+                if (boxCorner >= 0) {
+                    entry.colliderDragMode = 'boxCorner';
+                    entry.colliderDragCorner = boxCorner;
+                    var bp = this._getBoxParams(entry, sr);
+                    entry.colliderDragStart = { mx: mx, my: my, params: { ox: bp.ox, oy: bp.oy, w: bp.w, h: bp.h } };
+                    this._overlayCanvas.style.cursor = 'nesw-resize';
+                    return;
+                }
+                var boxBody = this._hitTestBoxBody(mx, my);
+                if (boxBody) {
+                    entry.colliderDragMode = 'boxMove';
+                    var bp2 = this._getBoxParams(entry, sr);
+                    entry.colliderDragStart = { mx: mx / s, my: my / s, params: { ox: bp2.ox, oy: bp2.oy } };
+                    this._overlayCanvas.style.cursor = 'move';
+                    return;
+                }
+            } else if (ct === 'circle') {
+                var circHandle = this._hitTestCircleHandle(mx, my);
+                if (circHandle) {
+                    entry.colliderDragMode = 'circleRadius';
+                    var cp = this._getCircleParams(entry, sr);
+                    entry.colliderDragStart = { mx: mx, my: my, params: { r: cp.r } };
+                    this._overlayCanvas.style.cursor = 'ew-resize';
+                    return;
+                }
+                var circBody = this._hitTestCircleBody(mx, my);
+                if (circBody) {
+                    entry.colliderDragMode = 'circleMove';
+                    var cp2 = this._getCircleParams(entry, sr);
+                    entry.colliderDragStart = { mx: mx / s, my: my / s, params: { ox: cp2.ox, oy: cp2.oy } };
+                    this._overlayCanvas.style.cursor = 'move';
+                    return;
+                }
             }
-
-            // 单击空白处清除双击状态
-            this.state._lastClickTime = 0;
-            this.state._lastClickIdx = -1;
-            this.state._lastSegClickTime = 0;
-            this.state._lastSegIdx = -1;
         }
 
         // Transform mode (移动/缩放)
@@ -1224,32 +1395,86 @@ var PrefabMaker = {
         var my = (e.clientY - rect.top) * (pxH / cssH) - (entry._imgOy || 0);
         var s = this.state.scale;
 
-        // 碰撞体顶点拖拽中
-        if (entry.colliderDragIdx >= 0 && entry.selectedRegion >= 0) {
+        // 碰撞体拖拽中
+        if (entry.colliderEditActive && entry.selectedRegion >= 0) {
             var srDrag = entry.regions[entry.selectedRegion];
             if (srDrag) {
                 var bDr = srDrag.bounds;
                 var centerXDr = bDr.x + bDr.w / 2;
                 var centerYDr = bDr.y + bDr.h / 2;
-                // 鼠标在图像坐标中的位置
                 var imgXDr = mx / s;
                 var imgYDr = my / s;
-                // 转成 Cocos 坐标（中心相对，Y 翻转）
-                var newPt = {
-                    x: Math.round((imgXDr - centerXDr) * 10) / 10,
-                    y: Math.round(-(imgYDr - centerYDr) * 10) / 10
-                };
-                // 更新拖拽后的顶点
-                var points = this._extractColliderPoints(srDrag);
-                if (entry.colliderDragIdx < points.length) {
-                    points[entry.colliderDragIdx] = newPt;
-                    // 保存自定义顶点
-                    if (!entry.colliderCustomPoints) entry.colliderCustomPoints = {};
-                    entry.colliderCustomPoints[srDrag.id] = points;
+
+                if (entry.colliderDragMode === 'vertex') {
+                    var newPt = {
+                        x: Math.round((imgXDr - centerXDr) * 10) / 10,
+                        y: Math.round(-(imgYDr - centerYDr) * 10) / 10
+                    };
+                    var points = this._extractColliderPoints(srDrag);
+                    if (entry.colliderDragIdx < points.length) {
+                        points[entry.colliderDragIdx] = newPt;
+                        if (!entry.colliderCustomPoints) entry.colliderCustomPoints = {};
+                        entry.colliderCustomPoints[srDrag.id] = points;
+                        this._drawOverlay();
+                    }
+                    return;
+                }
+
+                if (entry.colliderDragMode === 'boxCorner') {
+                    var ds = entry.colliderDragStart;
+                    var oppCorner = (entry.colliderDragCorner + 2) % 4;
+                    var oppParams = { ox: ds.params.ox, oy: ds.params.oy, w: ds.params.w, h: ds.params.h };
+                    var oppPtImg = this._getBoxCornerImagePos(srDrag, oppParams, oppCorner);
+                    var newCX = (imgXDr + oppPtImg.x) / 2;
+                    var newCY = (imgYDr + oppPtImg.y) / 2;
+                    var newW = Math.max(4, Math.abs(imgXDr - oppPtImg.x));
+                    var newH = Math.max(4, Math.abs(imgYDr - oppPtImg.y));
+                    var newOX = Math.round((newCX - centerXDr) * 10) / 10;
+                    var newOY = Math.round(-(newCY - centerYDr) * 10) / 10;
+                    if (!entry.colliderBoxCustom) entry.colliderBoxCustom = {};
+                    entry.colliderBoxCustom[srDrag.id] = { ox: newOX, oy: newOY, w: Math.round(newW), h: Math.round(newH) };
                     this._drawOverlay();
+                    return;
+                }
+
+                if (entry.colliderDragMode === 'boxMove') {
+                    var ds2 = entry.colliderDragStart;
+                    var dImgX = imgXDr - ds2.mx;
+                    var dImgY = imgYDr - ds2.my;
+                    var newOX2 = Math.round((ds2.params.ox + dImgX) * 10) / 10;
+                    var newOY2 = Math.round((ds2.params.oy - dImgY) * 10) / 10;
+                    if (!entry.colliderBoxCustom) entry.colliderBoxCustom = {};
+                    var curBp = this._getBoxParams(entry, srDrag);
+                    entry.colliderBoxCustom[srDrag.id] = { ox: newOX2, oy: newOY2, w: curBp.w, h: curBp.h };
+                    this._drawOverlay();
+                    return;
+                }
+
+                if (entry.colliderDragMode === 'circleRadius') {
+                    var cp = this._getCircleParams(entry, srDrag);
+                    var circCX = centerXDr + cp.ox;
+                    var circCY = centerYDr - cp.oy;
+                    var dist = Math.sqrt((imgXDr - circCX) * (imgXDr - circCX) + (imgYDr - circCY) * (imgYDr - circCY));
+                    var newR = Math.max(2, Math.round(dist));
+                    if (!entry.colliderCircleCustom) entry.colliderCircleCustom = {};
+                    entry.colliderCircleCustom[srDrag.id] = { ox: cp.ox, oy: cp.oy, r: newR };
+                    this._drawOverlay();
+                    return;
+                }
+
+                if (entry.colliderDragMode === 'circleMove') {
+                    var ds4 = entry.colliderDragStart;
+                    var dImgX2 = imgXDr - ds4.mx;
+                    var dImgY2 = imgYDr - ds4.my;
+                    var newOX3 = Math.round((ds4.params.ox + dImgX2) * 10) / 10;
+                    var newOY3 = Math.round((ds4.params.oy - dImgY2) * 10) / 10;
+                    if (!entry.colliderCircleCustom) entry.colliderCircleCustom = {};
+                    var curCp = this._getCircleParams(entry, srDrag);
+                    entry.colliderCircleCustom[srDrag.id] = { ox: newOX3, oy: newOY3, r: curCp.r };
+                    this._drawOverlay();
+                    return;
                 }
             }
-            return;
         }
 
         // Transform drag preview
@@ -1297,9 +1522,12 @@ var PrefabMaker = {
     _onMouseUp: function(e) {
         var entry = this._getCurrentEntry(); if (!entry) return;
 
-        // 碰撞体顶点拖拽松手
-        if (entry.colliderDragIdx >= 0) {
+        // 碰撞体拖拽松手
+        if (entry.colliderDragMode) {
+            entry.colliderDragMode = null;
             entry.colliderDragIdx = -1;
+            entry.colliderDragCorner = -1;
+            entry.colliderDragStart = null;
             this._overlayCanvas.style.cursor = 'pointer';
             return;
         }
@@ -1563,8 +1791,6 @@ var PrefabMaker = {
     // ========================================
 
     _detectColliderType: function(region) {
-        var entry = this._getCurrentEntry();
-
         var colliderSetting = this._q('#colliderType').value;
         if (colliderSetting !== 'auto') return colliderSetting;
 
@@ -1577,8 +1803,45 @@ var PrefabMaker = {
     },
 
     // ========================================
-    //   碰撞体顶点编辑（拖拽）
+    //   碰撞体编辑（Box/Circle/Polygon）
     // ========================================
+
+    _getBoxDefaultParams: function(region) {
+        var b = region.bounds;
+        var scale = (parseInt(this._q('#colliderScale').value) || 100) / 100;
+        return { ox: 0, oy: 0, w: Math.round(b.w * 0.9 * scale), h: Math.round(b.h * 0.9 * scale) };
+    },
+
+    _getCircleDefaultParams: function(region) {
+        var b = region.bounds;
+        var scale = (parseInt(this._q('#colliderScale').value) || 100) / 100;
+        return { ox: 0, oy: 0, r: Math.round(Math.min(b.w, b.h) * 0.45 * scale) };
+    },
+
+    _getBoxParams: function(entry, region) {
+        if (!entry || !region) return this._getBoxDefaultParams(region);
+        var custom = entry.colliderBoxCustom[region.id];
+        return custom || this._getBoxDefaultParams(region);
+    },
+
+    _getCircleParams: function(entry, region) {
+        if (!entry || !region) return this._getCircleDefaultParams(region);
+        var custom = entry.colliderCircleCustom[region.id];
+        return custom || this._getCircleDefaultParams(region);
+    },
+
+    _getBoxCornerImagePos: function(region, params, cornerIdx) {
+        var b = region.bounds;
+        var cx = b.x + b.w / 2 + params.ox;
+        var cy = b.y + b.h / 2 - params.oy;
+        var hw = params.w / 2, hh = params.h / 2;
+        switch (cornerIdx) {
+            case 0: return { x: cx - hw, y: cy - hh }; // TL
+            case 1: return { x: cx + hw, y: cy - hh }; // TR
+            case 2: return { x: cx + hw, y: cy + hh }; // BR
+            case 3: return { x: cx - hw, y: cy + hh }; // BL
+        }
+    },
 
     _toggleColliderEdit: function() {
         var entry = this._getCurrentEntry(); if (!entry) return;
@@ -1586,7 +1849,18 @@ var PrefabMaker = {
         entry.colliderEditActive = !entry.colliderEditActive;
         var btn = this._q('[data-action="toggleColliderEdit"]');
         if (btn) btn.classList.toggle('lasso-active', entry.colliderEditActive);
-        this._showToast(entry.colliderEditActive ? '编辑模式：拖拽绿色圆点调整碰撞体' : '已退出编辑模式');
+        if (entry.colliderEditActive) {
+            var ct = this._q('#colliderType').value;
+            if (ct === 'auto' && entry.selectedRegion >= 0) {
+                var sr = entry.regions[entry.selectedRegion];
+                if (sr) ct = this._detectColliderType(sr);
+            }
+            if (ct === 'box') this._showToast('拖拽绿色方块调整尺寸，拖拽内部移动碰撞体');
+            else if (ct === 'circle') this._showToast('拖拽黄色圆点调整半径，拖拽内部移动碰撞体');
+            else this._showToast('拖拽绿色圆点调整碰撞体');
+        } else {
+            this._showToast('已退出编辑模式');
+        }
         this._drawOverlay();
     },
 
@@ -1664,6 +1938,67 @@ var PrefabMaker = {
             }
         }
         return null;
+    },
+
+    _hitTestBoxCorner: function(mx, my) {
+        var entry = this._getCurrentEntry(); if (!entry) return -1;
+        if (entry.selectedRegion < 0 || !entry.colliderEditActive) return -1;
+        var sr = entry.regions[entry.selectedRegion];
+        if (!sr) return -1;
+        var params = this._getBoxParams(entry, sr);
+        var s = this.state.scale;
+        var hitR = 12;
+        for (var ci = 0; ci < 4; ci++) {
+            var pt = this._getBoxCornerImagePos(sr, params, ci);
+            var cx = pt.x * s, cy = pt.y * s;
+            var dx = mx - cx, dy = my - cy;
+            if (dx * dx + dy * dy < hitR * hitR) return ci;
+        }
+        return -1;
+    },
+
+    _hitTestBoxBody: function(mx, my) {
+        var entry = this._getCurrentEntry(); if (!entry) return false;
+        if (entry.selectedRegion < 0 || !entry.colliderEditActive) return false;
+        var sr = entry.regions[entry.selectedRegion];
+        if (!sr) return false;
+        var params = this._getBoxParams(entry, sr);
+        var s = this.state.scale;
+        var b = sr.bounds;
+        var cx = b.x + b.w / 2 + params.ox;
+        var cy = b.y + b.h / 2 - params.oy;
+        var hw = params.w / 2, hh = params.h / 2;
+        var left = (cx - hw) * s, right = (cx + hw) * s;
+        var top = (cy - hh) * s, bottom = (cy + hh) * s;
+        return mx >= left && mx <= right && my >= top && my <= bottom;
+    },
+
+    _hitTestCircleHandle: function(mx, my) {
+        var entry = this._getCurrentEntry(); if (!entry) return false;
+        if (entry.selectedRegion < 0 || !entry.colliderEditActive) return false;
+        var sr = entry.regions[entry.selectedRegion];
+        if (!sr) return false;
+        var params = this._getCircleParams(entry, sr);
+        var s = this.state.scale;
+        var b = sr.bounds;
+        var cx = (b.x + b.w / 2 + params.ox + params.r) * s;
+        var cy = (b.y + b.h / 2 - params.oy) * s;
+        var hitR = 12;
+        return (mx - cx) * (mx - cx) + (my - cy) * (my - cy) < hitR * hitR;
+    },
+
+    _hitTestCircleBody: function(mx, my) {
+        var entry = this._getCurrentEntry(); if (!entry) return false;
+        if (entry.selectedRegion < 0 || !entry.colliderEditActive) return false;
+        var sr = entry.regions[entry.selectedRegion];
+        if (!sr) return false;
+        var params = this._getCircleParams(entry, sr);
+        var s = this.state.scale;
+        var b = sr.bounds;
+        var cx = (b.x + b.w / 2 + params.ox) * s;
+        var cy = (b.y + b.h / 2 - params.oy) * s;
+        var r = params.r * s;
+        return (mx - cx) * (mx - cx) + (my - cy) * (my - cy) < r * r;
     },
 
     _simplifyPolygon: function(points, epsilon) {
@@ -1949,7 +2284,7 @@ var PrefabMaker = {
     //   Prefab JSON Generation
     // ========================================
 
-    _generatePrefabJson: function(foodId, morph, spriteUuid, colliderPoints, colliderType, bounds, clickAreaScale) {
+    _generatePrefabJson: function(foodId, morph, spriteUuid, colliderPoints, colliderType, bounds, clickAreaScale, colliderCustom, clickAreaRotation) {
         var name = 'f' + foodId + '_' + morph;
         var spriteRef = spriteUuid + '@f9941';
         var imgUuid = this._generateDeterministicUUID('img/' + name);
@@ -1972,7 +2307,7 @@ var PrefabMaker = {
         var clickY = Math.round((bounds.y + bounds.h / 2 - clickH / 2) * 10) / 10;
 
         // Euler z = -49（可配置）
-        var rotZ = parseFloat(this._q('#exportRotation').value) || 0;
+        var rotZ = (clickAreaRotation != null) ? clickAreaRotation : (parseFloat(this._q('#exportRotation').value) || 0);
         var rad = rotZ * Math.PI / 180;
         var cos = Math.cos(rad / 2);
         var sin = Math.sin(rad / 2);
@@ -1983,18 +2318,37 @@ var PrefabMaker = {
         var colliderTypeFinal = colliderType || 'polygon';
         var colliderObj = null;
         if (colliderTypeFinal === 'box') {
+            var bw, bh, boxOffX, boxOffY;
+            if (colliderCustom && colliderCustom.w) {
+                bw = colliderCustom.w; bh = colliderCustom.h;
+                boxOffX = colliderCustom.ox || 0; boxOffY = colliderCustom.oy || 0;
+            } else {
+                var boxScale = (parseInt(this._q('#colliderScale').value) || 100) / 100;
+                bw = Math.round(bounds.w * 0.9 * boxScale); bh = Math.round(bounds.h * 0.9 * boxScale);
+                boxOffX = 0; boxOffY = 0;
+            }
             colliderObj = {
                 __type__: 'cc.BoxCollider2D',
-                _contentSize: { __type__: 'cc.Size', width: Math.round(bounds.w * 0.9), height: Math.round(bounds.h * 0.9) },
+                _offset: { __type__: 'cc.Vec2', x: boxOffX, y: boxOffY },
+                _contentSize: { __type__: 'cc.Size', width: bw, height: bh },
                 node: { __id__: 1 },
                 __prefab: { __type__: 'cc.CompPrefabInfo', fileId: colliderUuid },
                 _group: 2,
                 _restitution: 0.3
             };
         } else if (colliderTypeFinal === 'circle') {
+            var cr, circOffX, circOffY;
+            if (colliderCustom && colliderCustom.r) {
+                cr = colliderCustom.r; circOffX = colliderCustom.ox || 0; circOffY = colliderCustom.oy || 0;
+            } else {
+                var circScale = (parseInt(this._q('#colliderScale').value) || 100) / 100;
+                cr = Math.round(Math.min(bounds.w, bounds.h) * 0.45 * circScale);
+                circOffX = 0; circOffY = 0;
+            }
             colliderObj = {
                 __type__: 'cc.CircleCollider2D',
-                _radius: Math.round(Math.min(bounds.w, bounds.h) * 0.45),
+                _offset: { __type__: 'cc.Vec2', x: circOffX, y: circOffY },
+                _radius: cr,
                 node: { __id__: 1 },
                 __prefab: { __type__: 'cc.CompPrefabInfo', fileId: colliderUuid },
                 _group: 2
@@ -2333,7 +2687,7 @@ var PrefabMaker = {
         var self = this;
         var foodGroup = parseInt(this._q('#exportFoodGroup').value) || 1;
         var startFoodId = parseInt(this._q('#exportStartFoodId').value) || 1;
-        var clickAreaScale = parseFloat(this._q('#exportClickAreaScale').value) || 1.0;
+        var clickAreaScaleGlobal = parseFloat(this._q('#exportClickAreaScale').value) || 1.0;
 
         var info = self._headerInfo;
         var progWrap = self._headerProgress;
@@ -2382,7 +2736,12 @@ var PrefabMaker = {
                     var cp = (entry.colliderCustomPoints && entry.colliderCustomPoints[region.id]) ? entry.colliderCustomPoints[region.id] : self._extractColliderPointsForExport(region, entry);
                     var actualColliderType = self._detectColliderType(region);
                     var imgUuid = self._generateDeterministicUUID('png/' + nameBase);
-                    var prefabJson = self._generatePrefabJson(foodId, morph, imgUuid, cp, actualColliderType, region.bounds, clickAreaScale);
+                    var colliderCustom = null;
+                    if (actualColliderType === 'box') colliderCustom = entry.colliderBoxCustom[region.id] || null;
+                    else if (actualColliderType === 'circle') colliderCustom = entry.colliderCircleCustom[region.id] || null;
+                    var entryClickScale = (entry.clickAreaScale != null) ? entry.clickAreaScale : clickAreaScaleGlobal;
+                    var entryClickRot = (entry.clickAreaRotation != null) ? entry.clickAreaRotation : null;
+                    var prefabJson = self._generatePrefabJson(foodId, morph, imgUuid, cp, actualColliderType, region.bounds, entryClickScale, colliderCustom, entryClickRot);
                     await self._writeFile(prefabDir, nameBase + '.prefab', prefabJson);
                     await self._writeFile(prefabDir, nameBase + '.prefab.meta', self._generatePrefabMeta(nameBase));
                     var imgSubDir = await self._ensureDir(imgDir, String(foodId));
@@ -2423,7 +2782,7 @@ var PrefabMaker = {
         if (!img) return [];
         var b = region.bounds;
         var imgW = img.width, imgH = img.height;
-        var targetCount = parseInt(this._q('#colliderSimplify').value) || 6;
+        var targetCount = (entry && entry.colliderTargetCount) ? entry.colliderTargetCount : (parseInt(this._q('#colliderSimplify').value) || 6);
         targetCount = Math.max(3, Math.min(8, targetCount));
         var outline = this._traceRegionOutline(region, imgW, imgH);
         var centerX = b.x + b.w / 2;
@@ -2498,6 +2857,17 @@ var PrefabMaker = {
             addPt(toCocos(hull[idx][0], hull[idx][1]));
         }
         while (result.length < targetCount) result.push({ x: 0, y: 0 });
+
+        // 碰撞体缩放：将顶点向中心等比例缩放
+        var colliderScale = parseInt(this._q('#colliderScale').value) || 100;
+        if (colliderScale !== 100 && result.length > 0) {
+            var scaleFactor = colliderScale / 100;
+            for (var si2 = 0; si2 < result.length; si2++) {
+                result[si2].x = Math.round(result[si2].x * scaleFactor * 10) / 10;
+                result[si2].y = Math.round(result[si2].y * scaleFactor * 10) / 10;
+            }
+        }
+
         return result;
     },
 
