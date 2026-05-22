@@ -2329,13 +2329,13 @@ var PrefabMaker = {
             }
             colliderObj = {
                 __type__: 'cc.BoxCollider2D',
-                _offset: { __type__: 'cc.Vec2', x: boxOffX, y: boxOffY },
-                _contentSize: { __type__: 'cc.Size', width: bw, height: bh },
+                _size: { __type__: 'cc.Size', width: bw, height: bh },
                 node: { __id__: 1 },
                 __prefab: { __type__: 'cc.CompPrefabInfo', fileId: colliderUuid },
                 _group: 2,
                 _restitution: 0.3
             };
+            if (boxOffX !== 0 || boxOffY !== 0) colliderObj.offset = { __type__: 'cc.Vec2', x:boxOffX, y: boxOffY };
         } else if (colliderTypeFinal === 'circle') {
             var cr, circOffX, circOffY;
             if (colliderCustom && colliderCustom.r) {
@@ -2347,12 +2347,12 @@ var PrefabMaker = {
             }
             colliderObj = {
                 __type__: 'cc.CircleCollider2D',
-                _offset: { __type__: 'cc.Vec2', x: circOffX, y: circOffY },
                 _radius: cr,
                 node: { __id__: 1 },
                 __prefab: { __type__: 'cc.CompPrefabInfo', fileId: colliderUuid },
                 _group: 2
             };
+            if (circOffX !== 0 || circOffY !== 0) colliderObj.offset = { __type__: 'cc.Vec2', x:circOffX, y: circOffY };
         } else {
             colliderObj = {
                 __type__: 'cc.PolygonCollider2D',
