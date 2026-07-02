@@ -1,0 +1,42 @@
+{
+  "id": "mutual_exclusive",
+  "name": "互斥选择",
+  "icon": "🔀",
+  "description": "二选一或三选一，选择一个后其他选项消失",
+  "category": "advanced",
+  "trigger": {
+    "type": "click",
+    "defaultParams": {
+      "count": 1
+    },
+    "editableParams": [
+      {
+        "key": "clickNode",
+        "label": "点击节点",
+        "type": "node",
+        "required": true
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.2,
+        "appearT": 0.2
+      }
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ],
+  "relations": {
+    "groupIds": true
+  }
+}

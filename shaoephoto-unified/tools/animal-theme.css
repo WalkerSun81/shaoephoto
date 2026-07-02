@@ -1,0 +1,1286 @@
+/**
+ * Animal Island Theme Override for Tools
+ * 动物森友会风格覆盖——将各工具的深色/Apple主题改为动物森友会暖色调
+ * 加载在工具自身的 style.css 之后，用 !important 覆盖原始值
+ */
+
+/* ============================================
+   1. CSS 变量覆盖
+   ============================================ */
+
+:root {
+    --bg: #f8f8f0 !important;
+    --bg2: #f0e8d8 !important;
+    --bg3: #f7f3df !important;
+    --accent: #19c8b9 !important;
+    --accent2: #6fba2c !important;
+    --text: #794f27 !important;
+    --text2: #9f927d !important;
+    --border: #e8e2d6 !important;
+    --success: #6fba2c !important;
+    --warn: #f5c31c !important;
+    --font: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+}
+
+/* ============================================
+   2. 全局 & Body
+   ============================================ */
+
+html, body {
+    background: #f8f8f0 !important;
+    color: #794f27 !important;
+    font-family: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+::-webkit-scrollbar-track { background: transparent !important; }
+::-webkit-scrollbar-thumb { background: #c4b89e !important; border-radius: 3px !important; }
+::-webkit-scrollbar-thumb:hover { background: #9f927d !important; }
+
+/* ============================================
+   3. Overlay 全屏容器
+   ============================================ */
+
+.tt-overlay {
+    background: #f8f8f0 !important;
+    color: #794f27 !important;
+    font-family: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   4. Header 顶部栏
+   ============================================ */
+
+.tt-header {
+    background: #f0e8d8 !important;
+    border-bottom: 2px solid #e8e2d6 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-header button {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tt-header button:hover {
+    background: #f7f3df !important;
+    border-color: #19c8b9 !important;
+    color: #19c8b9 !important;
+    transform: translateY(-1px) !important;
+}
+
+.tt-header button.active {
+    background: #0CC0B5 !important;
+    border-color: #0CC0B5 !important;
+    color: #FFF9E3 !important;
+    font-weight: 600 !important;
+}
+
+.tt-header h1 {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #794f27 !important;
+}
+
+/* ============================================
+   5. Mode Tabs & Toggle Buttons
+   ============================================ */
+
+.tt-mode-tabs {
+    background: rgba(25, 200, 185, 0.08) !important;
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 24px !important;
+}
+
+.tt-mode-tab {
+    color: #9f927d !important;
+    border-radius: 24px !important;
+}
+
+.tt-mode-tab.active {
+    background: #0CC0B5 !important;
+    color: #FFF9E3 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 3px 0 0 rgba(61, 52, 40, 0.08) !important;
+}
+
+.tt-mode-tab:hover:not(.active) {
+    background: rgba(25, 200, 185, 0.1) !important;
+    color: #794f27 !important;
+}
+
+.tt-toggle-overlay-btn {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+}
+
+.tt-toggle-overlay-btn:hover {
+    background: #f7f3df !important;
+    border-color: #19c8b9 !important;
+    color: #794f27 !important;
+}
+
+.tt-toggle-overlay-btn.active {
+    background: #0CC0B5 !important;
+    border-color: #50B9AB !important;
+    color: #FFF9E3 !important;
+}
+
+/* ============================================
+   6. Sidebar 侧边栏
+   ============================================ */
+
+.tt-sidebar {
+    background: #f0e8d8 !important;
+    border-right: 2px solid #e8e2d6 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* tile-tool uses tt-panel as its sidebar wrapper */
+.tt-panel {
+    background: #f0e8d8 !important;
+    border-right: 2px solid #e8e2d6 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   7. Main 主内容区
+   ============================================ */
+
+.tt-main {
+    background: repeating-conic-gradient(rgba(25, 200, 185, 0.03) 0% 25%, transparent 0% 50%) 0 0 / 20px 20px !important;
+}
+
+/* ============================================
+   8. Section 区块 — 仅改视觉风格，保留原始间距
+   ============================================ */
+
+.tt-section, #ttGridPanel {
+    border-color: #e8e2d6 !important;
+    border-style: solid !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+.tt-section-title {
+    color: #9f927d !important;
+    font-weight: 600 !important;
+}
+
+.tt-section-title::before {
+    background: #19c8b9 !important;
+}
+
+.tt-step-title {
+    color: #19c8b9 !important;
+    background: rgba(25, 200, 185, 0.06) !important;
+    border-left: 3px solid #19c8b9 !important;
+    border-radius: 0 16px 16px 0 !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+}
+
+.tt-step-num {
+    background: #19c8b9 !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+}
+
+/* 中间层 wrapper 透明化 */
+#ttIrregularPanel, #ttIrregularSteps {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+/* ============================================
+   9. Buttons 按钮
+   ============================================ */
+
+.tt-btn {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px 0 rgba(61, 52, 40, 0.06) !important;
+}
+
+.tt-btn:hover {
+    background: #f7f3df !important;
+    border-color: #19c8b9 !important;
+    color: #19c8b9 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 10px 0 rgba(61, 52, 40, 0.1) !important;
+}
+
+.tt-btn:active {
+    transform: translateY(0) !important;
+}
+
+.tt-btn-primary {
+    background: #f8f8f0 !important;
+    border-color: #f8f8f0 !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+    box-shadow: 0 5px 0 0 #bdaea0 !important;
+}
+
+.tt-btn-primary:hover {
+    background: #f8f8f0 !important;
+    border-color: #f8f8f0 !important;
+    color: #794f27 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 0 0 #bdaea0 !important;
+}
+
+.tt-btn-primary:active {
+    background: #f8f8f0 !important;
+    border-color: #f8f8f0 !important;
+    transform: translateY(2px) !important;
+    box-shadow: 0 1px 0 0 #bdaea0 !important;
+}
+
+.tt-btn-secondary {
+    background: #f7f3df !important;
+    border-color: #e8e2d6 !important;
+    color: #794f27 !important;
+}
+
+.tt-btn-success {
+    background: #6fba2c !important;
+    border-color: #6fba2c !important;
+    color: #ffffff !important;
+}
+
+.tt-btn-success:hover {
+    background: #85cc45 !important;
+    border-color: #85cc45 !important;
+}
+
+.tt-btn-danger {
+    background: #e05a5a !important;
+    border-color: #e05a5a !important;
+    color: #ffffff !important;
+}
+
+.tt-btn-danger:hover {
+    background: #e87878 !important;
+    border-color: #e87878 !important;
+}
+
+/* ============================================
+   10. Inputs 输入框
+   ============================================ */
+
+.tt-input-group label {
+    color: #9f927d !important;
+    font-weight: 500 !important;
+}
+
+.tt-input-group input[type="text"],
+.tt-input-group input[type="number"],
+.tt-input-group select {
+    background: #f7f3df !important;
+    border: 2px solid #c4b89e !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+    box-shadow: 0 3px 0 0 #d4c9b4 !important;
+    font-family: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tt-input-group input:focus,
+.tt-input-group select:focus {
+    border-color: #19c8b9 !important;
+    box-shadow: 0 0 0 3px rgba(25, 200, 185, 0.15) !important;
+    outline: none !important;
+}
+
+.tt-input-group input[type="range"] {
+    accent-color: #19c8b9 !important;
+}
+
+.tt-range-val {
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================
+   11. Toggle 开关 (Animal Island Switch style)
+   ============================================ */
+
+.tt-toggle-slider {
+    background: #d4c9b4 !important;
+    border: 2.5px solid #c4b89e !important;
+    box-shadow: inset 0 2px 4px rgba(114, 93, 66, 0.15) !important;
+}
+
+.tt-toggle input:checked + .tt-toggle-slider {
+    background: #86d67a !important;
+    border-color: #6fba2c !important;
+    box-shadow: inset 0 2px 4px rgba(90, 158, 30, 0.2) !important;
+}
+
+/* ============================================
+   12. Grid Row
+   ============================================ */
+
+.tt-grid-row label:first-child {
+    color: #9f927d !important;
+    font-weight: 500 !important;
+}
+
+.tt-grid-row input[type="number"] {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+}
+
+.tt-grid-input-wrap span {
+    color: #9f927d !important;
+}
+
+/* ============================================
+   13. Upload Zone 上传区域
+   ============================================ */
+
+.tt-upload-zone {
+    border-color: #e8e2d6 !important;
+    border-style: dashed !important;
+    border-width: 2px !important;
+    border-radius: 18px !important;
+    background: #f7f3df !important;
+    color: #9f927d !important;
+}
+
+.tt-upload-zone:hover,
+.tt-upload-zone.dragover {
+    border-color: #19c8b9 !important;
+    background: rgba(25, 200, 185, 0.04) !important;
+    color: #19c8b9 !important;
+}
+
+/* ============================================
+   14. Info Bar 信息栏
+   ============================================ */
+
+.tt-info-bar {
+    background: #f0e8d8 !important;
+    border-top: 2px solid #e8e2d6 !important;
+    color: #9f927d !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-info-bar .tt-val {
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================
+   15. Canvas Hint
+   ============================================ */
+
+.tt-canvas-hint {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #9f927d !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   16. Checkbox & Color Pick
+   ============================================ */
+
+.tt-checkbox-row {
+    color: #794f27 !important;
+}
+
+.tt-checkbox-row input {
+    accent-color: #19c8b9 !important;
+}
+
+.tt-color-pick-row input[type="color"] {
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 6px !important;
+}
+
+/* ============================================
+   17. Region List 区域列表
+   ============================================ */
+
+.tt-region-item {
+    color: #794f27 !important;
+    border-left-color: transparent !important;
+}
+
+.tt-region-item:hover {
+    background: rgba(25, 200, 185, 0.04) !important;
+}
+
+.tt-region-item.selected {
+    background: rgba(25, 200, 185, 0.08) !important;
+    border-left-color: #19c8b9 !important;
+}
+
+.tt-region-item.inner-checked {
+    background: rgba(111, 186, 44, 0.08) !important;
+    border-left-color: #6fba2c !important;
+}
+
+.tt-region-item .tt-info {
+    color: #9f927d !important;
+}
+
+.tt-region-item .tt-del {
+    color: #9f927d !important;
+}
+
+.tt-region-item .tt-del:hover {
+    background: #e05a5a !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   18. Toast 通知
+   ============================================ */
+
+.tt-toast {
+    background: #f7f3df !important;
+    color: #794f27 !important;
+    border-radius: 18px !important;
+    border-left: 3px solid #6fba2c !important;
+    box-shadow: 0 8px 24px 0 rgba(61, 52, 40, 0.14) !important;
+}
+
+.tt-toast.error {
+    border-left-color: #e05a5a !important;
+    background: #fef0f0 !important;
+    color: #e05a5a !important;
+}
+
+/* ============================================
+   19. Empty State 空状态
+   ============================================ */
+
+.tt-empty-state {
+    color: #9f927d !important;
+}
+
+/* ============================================
+   20. Merge Grid
+   ============================================ */
+
+.tt-merge-item {
+    background: #f0e8d8 !important;
+    border-radius: 18px !important;
+}
+
+/* ============================================
+   21. Magnifier 放大镜
+   ============================================ */
+
+.tt-magnifier {
+    border-color: #19c8b9 !important;
+    box-shadow: 0 4px 20px rgba(61, 52, 40, 0.15) !important;
+}
+
+/* ============================================
+   22. Sub Tabs 子标签
+   ============================================ */
+
+.tt-sub-tab {
+    border-color: #e8e2d6 !important;
+    background: #f7f3df !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+}
+
+.tt-sub-tab:hover {
+    border-color: #19c8b9 !important;
+    color: #19c8b9 !important;
+}
+
+.tt-sub-tab.active {
+    background: #0CC0B5 !important;
+    border-color: #0CC0B5 !important;
+    color: #FFF9E3 !important;
+}
+
+/* ============================================
+   23. Region Panel 右侧面板
+   ============================================ */
+
+.tt-region-panel {
+    background: #f0e8d8 !important;
+    border-left: 2px solid #e8e2d6 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-region-panel .tt-rp-header {
+    color: #794f27 !important;
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-region-panel .tt-rp-header .tt-rp-fold {
+    color: #9f927d !important;
+}
+
+.tt-region-panel .tt-rp-header .tt-rp-fold:hover {
+    color: #19c8b9 !important;
+}
+
+.tt-region-panel .tt-rp-toolbar button {
+    background: #f7f3df !important;
+    color: #9f927d !important;
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 50px !important;
+}
+
+.tt-region-panel .tt-rp-toolbar button:hover {
+    background: #e8e2d6 !important;
+    color: #794f27 !important;
+}
+
+.tt-region-panel .tt-rp-footer button {
+    background: #f7f3df !important;
+    color: #9f927d !important;
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 50px !important;
+}
+
+.tt-region-panel .tt-rp-footer button:hover {
+    background: #e8e2d6 !important;
+    color: #794f27 !important;
+}
+
+/* ============================================
+   24. Split Dialog 拆分对话框
+   ============================================ */
+
+.tt-splitdlg-backdrop {
+    background: rgba(61, 52, 40, 0.35) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-splitdlg {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    box-shadow: 0 8px 24px 0 rgba(61, 52, 40, 0.14) !important;
+    border-radius: 24px !important;
+}
+
+.tt-splitdlg-header {
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-splitdlg-header h2 {
+    color: #19c8b9 !important;
+}
+
+.tt-splitdlg-close {
+    color: #9f927d !important;
+    border-radius: 50px !important;
+}
+
+.tt-splitdlg-close:hover {
+    background: #e8e2d6 !important;
+    color: #794f27 !important;
+}
+
+.tt-splitdlg-settings {
+    border-right-color: #e8e2d6 !important;
+}
+
+.tt-splitdlg-table th {
+    background: #f0e8d8 !important;
+    color: #9f927d !important;
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-splitdlg-table td {
+    color: #794f27 !important;
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-splitdlg-table tr:hover td {
+    background: rgba(25, 200, 185, 0.04) !important;
+}
+
+.tt-splitdlg-table input[type="text"],
+.tt-splitdlg-table input[type="number"] {
+    background: #f8f8f0 !important;
+    color: #794f27 !important;
+    border-color: transparent !important;
+    border-radius: 50px !important;
+}
+
+.tt-splitdlg-table input:focus {
+    border-color: #19c8b9 !important;
+    background: #ffffff !important;
+}
+
+.tt-splitdlg-drag-handle {
+    color: #9f927d !important;
+}
+
+.tt-splitdlg-drag-handle:hover {
+    color: #794f27 !important;
+}
+
+.tt-splitdlg-row.tt-splitdlg-drag-over td {
+    background: rgba(25, 200, 185, 0.08) !important;
+    border-top-color: #19c8b9 !important;
+}
+
+.tt-splitdlg-group-header td {
+    background: #f0e8d8 !important;
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+.tt-splitdlg-footer {
+    border-top-color: #e8e2d6 !important;
+}
+
+.tt-splitdlg-inner-dot {
+    background: #6fba2c !important;
+}
+
+/* ============================================
+   25. Log Panel 日志面板
+   ============================================ */
+
+.tt-log-panel {
+    background: #f0e8d8 !important;
+    border-left: 2px solid #e8e2d6 !important;
+}
+
+.tt-log-header {
+    border-bottom-color: #e8e2d6 !important;
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+.tt-log-header button {
+    border-color: #e8e2d6 !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+}
+
+.tt-log-header button:hover {
+    border-color: #19c8b9 !important;
+    color: #19c8b9 !important;
+}
+
+.tt-log-item {
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-log-item .tt-log-name {
+    color: #794f27 !important;
+}
+
+.tt-log-item .tt-log-time {
+    color: #c4b89e !important;
+}
+
+/* ============================================
+   26. Right Panel 右侧缩略图面板
+   ============================================ */
+
+.tt-right-panel {
+    background: #f0e8d8 !important;
+    border-left: 2px solid #e8e2d6 !important;
+}
+
+.tt-rp-header {
+    color: #19c8b9 !important;
+    border-bottom-color: #e8e2d6 !important;
+    font-weight: 600 !important;
+}
+
+.tt-thumb-item:hover {
+    background: rgba(25, 200, 185, 0.04) !important;
+}
+
+.tt-thumb-item.active {
+    background: rgba(25, 200, 185, 0.08) !important;
+    border-color: #19c8b9 !important;
+}
+
+.tt-thumb-name {
+    color: #9f927d !important;
+}
+
+.tt-thumb-del:hover {
+    background: #e05a5a !important;
+    color: #ffffff !important;
+}
+
+.tt-thumb-badge {
+    background: #f7f3df !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+}
+
+/* ============================================
+   27. Lasso Active
+   ============================================ */
+
+.lasso-active {
+    background: #f5c31c !important;
+    border-color: #f5c31c !important;
+    color: #794f27 !important;
+}
+
+/* ============================================
+   28. Progress Bar 进度条
+   ============================================ */
+
+.tt-progress-wrap {
+    background: #e8e2d6 !important;
+    border-radius: 50px !important;
+}
+
+.tt-progress-bar {
+    background: linear-gradient(90deg, #19c8b9, #6fba2c) !important;
+    border-radius: 50px !important;
+}
+
+/* ============================================
+   29. 内联样式覆盖（_createOverlay 中的硬编码颜色）
+   ============================================ */
+
+/* Header 信息文字 */
+#ttHeaderInfo {
+    color: #9f927d !important;
+}
+
+/* Header 进度条背景 */
+#ttHeaderProgress {
+    background: #e8e2d6 !important;
+    border-radius: 50px !important;
+}
+
+/* Header 进度条填充 */
+#ttHeaderProgressBar {
+    background: linear-gradient(90deg, #19c8b9, #6fba2c) !important;
+}
+
+/* 品牌文字 */
+.tt-header span[style*="font-weight:bold"],
+.tt-header span[style*="color:#eee"],
+.tt-header span[style*="color: #eee"] {
+    color: #794f27 !important;
+}
+
+/* 删除按钮 */
+[data-action="deleteSelectedSprite"],
+[data-action="deleteSelectedSprite"][style*="color:#e94560"] {
+    color: #e05a5a !important;
+}
+
+/* ============================================
+   30. Export Dialog 导出对话框
+   ============================================ */
+
+.tt-export-dlg-overlay {
+    background: rgba(61, 52, 40, 0.35) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-export-dlg {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 24px 0 rgba(61, 52, 40, 0.14) !important;
+}
+
+.tt-export-dlg-header {
+    border-bottom-color: #e8e2d6 !important;
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+.tt-export-dlg-footer {
+    border-top-color: #e8e2d6 !important;
+}
+
+.tt-export-table {
+    color: #794f27 !important;
+}
+
+.tt-export-table th {
+    color: #9f927d !important;
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-export-table td {
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-export-table input[type="text"] {
+    background: #f8f8f0 !important;
+    border-color: #e8e2d6 !important;
+    color: #794f27 !important;
+}
+
+.tt-export-table input:focus {
+    border-color: #19c8b9 !important;
+}
+
+.tt-export-group-header td {
+    background: rgba(25, 200, 185, 0.04) !important;
+    color: #19c8b9 !important;
+}
+
+/* ============================================
+   31. Saturation Labels 饱和度标签
+   ============================================ */
+
+.tt-sat-label {
+    color: #9f927d !important;
+}
+
+.tt-sat-val {
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================
+   32. Radio Row
+   ============================================ */
+
+.tt-radio-row {
+    color: #794f27 !important;
+}
+
+.tt-radio-row input[type="radio"] {
+    accent-color: #19c8b9 !important;
+}
+
+/* ============================================
+   33. Slider Disabled
+   ============================================ */
+
+.tt-slider-disabled {
+    opacity: 0.35 !important;
+    pointer-events: none !important;
+}
+
+/* ============================================
+   34. Dragging States
+   ============================================ */
+
+.tt-dragging {
+    opacity: 0.4 !important;
+}
+
+.tt-drag-over td {
+    border-bottom-color: #19c8b9 !important;
+}
+
+/* ============================================
+   35. Download Dialog
+   ============================================ */
+
+.tt-download-overlay {
+    background: rgba(61, 52, 40, 0.35) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.tt-download-dlg {
+    background: #f7f3df !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 24px 0 rgba(61, 52, 40, 0.14) !important;
+    border: 2px solid #e8e2d6 !important;
+}
+
+.tt-download-header {
+    border-bottom-color: #e8e2d6 !important;
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+.tt-download-footer {
+    border-top-color: #e8e2d6 !important;
+}
+
+/* ============================================
+   36. image-adjuster cos-world 容器
+   ============================================ */
+
+#cos-world {
+    background: #f8f8f0 !important;
+}
+
+/* ============================================
+   37. PNG Compressor — Specific Selectors
+   ============================================ */
+
+/* Preview boxes */
+.tt-preview-box canvas {
+    border-color: #e8e2d6 !important;
+    border-radius: 12px !important;
+}
+
+/* Image list items */
+.tt-image-item {
+    color: #794f27 !important;
+}
+
+.tt-image-item.active {
+    background: rgba(25, 200, 185, 0.08) !important;
+    border-color: #19c8b9 !important;
+}
+
+.tt-image-item:hover {
+    background: rgba(25, 200, 185, 0.04) !important;
+}
+
+.tt-image-name {
+    color: #794f27 !important;
+}
+
+.tt-image-size {
+    color: #9f927d !important;
+}
+
+.tt-image-size .tt-reduced {
+    color: #6fba2c !important;
+    font-weight: 600 !important;
+}
+
+.tt-image-del:hover {
+    background: #e05a5a !important;
+    color: #ffffff !important;
+}
+
+.tt-image-thumb {
+    border-radius: 18px !important;
+    border: 2px solid #e8e2d6 !important;
+}
+
+/* Preview labels */
+.tt-preview-label {
+    color: #9f927d !important;
+}
+
+.tt-preview-size.original {
+    color: #9f927d !important;
+}
+
+.tt-preview-size.compressed {
+    color: #6fba2c !important;
+    font-weight: 600 !important;
+}
+
+/* Stats bar */
+.tt-stats-bar {
+    background: #f0e8d8 !important;
+    border-top: 2px solid #e8e2d6 !important;
+    color: #9f927d !important;
+}
+
+.tt-stats-bar .tt-val {
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+.tt-stats-bar .tt-val.green {
+    color: #6fba2c !important;
+}
+
+.tt-stats-bar .tt-val.savings {
+    color: #6fba2c !important;
+    font-weight: 700 !important;
+}
+
+/* Format select buttons */
+.tt-format-btn {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tt-format-btn:hover {
+    border-color: #19c8b9 !important;
+    color: #794f27 !important;
+}
+
+.tt-format-btn.active {
+    background: #0CC0B5 !important;
+    color: #FFF9E3 !important;
+    border-color: #0CC0B5 !important;
+    box-shadow: 0 3px 0 0 rgba(61, 52, 40, 0.08) !important;
+}
+
+/* ============================================
+   38. image-adjuster — Specific Selectors
+   ============================================ */
+
+.tt-preview-container {
+    background: transparent !important;
+}
+
+.tt-preview-box canvas {
+    border-color: #e8e2d6 !important;
+    border-radius: 18px !important;
+}
+
+/* Batch adjustment labels */
+.tt-batch-label {
+    color: #9f927d !important;
+    font-weight: 500 !important;
+}
+
+.tt-batch-value {
+    color: #19c8b9 !important;
+    font-weight: 600 !important;
+}
+
+/* Per-image controls */
+.tt-image-ctrl {
+    border-bottom-color: #e8e2d6 !important;
+}
+
+.tt-image-ctrl-name {
+    color: #794f27 !important;
+    font-weight: 500 !important;
+}
+
+/* ============================================
+   39. prefab-maker — Specific Selectors
+   ============================================ */
+
+.tt-collider-type-btn {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #9f927d !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+}
+
+.tt-collider-type-btn:hover {
+    border-color: #19c8b9 !important;
+    color: #794f27 !important;
+}
+
+.tt-collider-type-btn.active {
+    background: #0CC0B5 !important;
+    border-color: #0CC0B5 !important;
+    color: #FFF9E3 !important;
+}
+
+.tt-food-id-input {
+    background: #f7f3df !important;
+    border: 2px solid #c4b89e !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+}
+
+.tt-food-id-input:focus {
+    border-color: #19c8b9 !important;
+}
+
+/* ============================================
+   40. Additional / Generic Selectors
+   ============================================ */
+
+/* Any button-style links that should look like buttons */
+a.tt-btn {
+    text-decoration: none !important;
+}
+
+/* File input label buttons */
+.tt-file-label {
+    background: #f7f3df !important;
+    border: 2px solid #e8e2d6 !important;
+    color: #794f27 !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tt-file-label:hover {
+    border-color: #19c8b9 !important;
+    color: #19c8b9 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Number stepper buttons */
+input[type="number"]::-webkit-inner-spin-button {
+    opacity: 0.5 !important;
+}
+
+/* Select dropdown arrows */
+select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%239f927d'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    padding-right: 32px !important;
+}
+
+/* Disabled elements */
+.tt-btn:disabled,
+.tt-input-group input:disabled,
+.tt-input-group select:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+/* Active pressed state for generic buttons */
+.tt-btn:active:not(:disabled) {
+    transform: scale(0.98) !important;
+}
+
+/* Tooltip-like elements */
+.tt-tooltip {
+    background: #f7f3df !important;
+    color: #794f27 !important;
+    border: 2px solid #e8e2d6 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 24px 0 rgba(61, 52, 40, 0.14) !important;
+}
+
+/* ============================================
+   41. Custom Cursor (tool subdirectory path)
+   ============================================ */
+html, body {
+    cursor: url('../../assets/cursor/cursor-icon.png') 4 0, default !important;
+}
+
+.tt-btn, .tt-mode-tab, .tt-sub-tab, .tt-toggle-overlay-btn,
+.tt-splitdlg-close, .tt-format-btn, .tt-collider-type-btn,
+.tt-region-item .tt-del, .tt-thumb-del, .tt-image-del,
+.tt-log-header button, .tt-rp-header .tt-rp-fold,
+.tt-region-panel button, button, a, [role="button"] {
+    cursor: url('../../assets/cursor/cursor-icon.png') 4 0, pointer !important;
+}
+
+input[type="text"], input[type="number"], textarea, select {
+    cursor: url('../../assets/cursor/cursor-icon.png') 4 0, text !important;
+}
+
+/* ============================================
+   42. Decorative Footer on Tool Pages
+   ============================================ */
+
+/* Footer sea waves — positioned at bottom of viewport via body::after */
+body::after {
+    content: '' !important;
+    display: block !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 50px !important;
+    background: url('../../assets/footer/footer-sea.svg') center bottom / cover no-repeat !important;
+    pointer-events: none !important;
+    z-index: 9998 !important;
+    opacity: 0.7 !important;
+}
+
+/* ============================================
+   43. Dialog Blob Clip-Path (disabled — broken by objectBoundingBox)
+   ============================================ */
+
+/* Apply blob shape to download dialog */
+.tt-download-dlg {
+    clip-path: url(#animal-modal-clip) !important;
+    padding: 36px 40px 28px 40px !important;
+    background: #f7f3df !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+.tt-download-header {
+    padding-bottom: 12px !important;
+}
+
+.tt-download-footer {
+    padding-top: 12px !important;
+}
+
+/* Blob dialog close button sizing */
+.tt-splitdlg-close,
+.tt-download-header button {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+}
+
+/* ============================================
+   44. Typewriter Toast Animation
+   ============================================ */
+.tt-toast.typewriter {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    animation: animal-toast-slide 0.3s ease, animal-toast-typewriter 0.5s steps(20) !important;
+    max-width: fit-content !important;
+}
+
+@keyframes animal-toast-slide {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes animal-toast-typewriter {
+    from { max-width: 0; }
+    to { max-width: 500px; }
+}
+
+/* ============================================
+   45. Section Dividers (in tool sidebars)
+   ============================================ */
+.tt-section + .tt-section::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -12px !important;
+    left: 10% !important;
+    width: 80% !important;
+    height: 10px !important;
+    margin: 0 !important;
+    background: url('../../assets/dividers/wave-yellow.svg') center / contain no-repeat !important;
+    opacity: 0.6 !important;
+}

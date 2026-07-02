@@ -1,0 +1,49 @@
+{
+  "id": "drag_chain",
+  "name": "拖动链",
+  "icon": "⛓️",
+  "description": "A拖到B，B拖到C，多步操作",
+  "category": "advanced",
+  "trigger": {
+    "type": "drag",
+    "defaultParams": {
+      "dragEnd": "Back",
+      "dragfinish": "Disappear"
+    },
+    "editableParams": [
+      {
+        "key": "dragNode",
+        "label": "可拖节点",
+        "type": "node",
+        "required": true
+      },
+      {
+        "key": "destNode",
+        "label": "目标区域",
+        "type": "node",
+        "required": true
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.3,
+        "appearT": 0.3
+      }
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ],
+  "relations": {
+    "preWorkflows": true
+  }
+}

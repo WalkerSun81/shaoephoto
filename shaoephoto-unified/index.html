@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaoePhoto - 图像工具集</title>
+    <link rel="stylesheet" href="css/animal-theme.css">
+    <link rel="stylesheet" href="css/launcher.css">
+</head>
+<body>
+    <div class="launcher-container">
+
+        <!-- NookPhone Frame -->
+        <div class="phone-frame">
+
+            <!-- Status Bar -->
+            <div class="phone-status-bar">
+                <span class="phone-time" id="phoneTime">12:00</span>
+            </div>
+
+            <!-- Welcome Text -->
+            <div class="phone-welcome">ShaoePhoto</div>
+            <div class="phone-subtitle">图像处理工具集</div>
+
+            <!-- App Grid -->
+            <div class="phone-apps-grid">
+                <!-- App 1: Tile Tool (抠图工具) -->
+                <a href="tools/tile-tool/index.html" class="phone-app" style="background:#82D5BB;">
+                    <img src="assets/icons/icon-camera.svg" alt="抠图工具" class="phone-app-icon">
+                    <span class="phone-app-name">抠图</span>
+                </a>
+
+                <!-- App 2: Prefab Maker (预制体生成) -->
+                <a href="tools/prefab-maker/index.html" class="phone-app" style="background:#889DF0;">
+                    <img src="assets/icons/icon-diy.svg" alt="预制体生成" class="phone-app-icon">
+                    <span class="phone-app-name">预制体</span>
+                </a>
+
+                <!-- App 3: Image Adjuster (图像调整) -->
+                <a href="tools/image-adjuster/index.html" class="phone-app" style="background:#F8A6B2;">
+                    <img src="assets/icons/icon-variant.svg" alt="图像调整" class="phone-app-icon">
+                    <span class="phone-app-name">图像调整</span>
+                </a>
+
+                <!-- App 4: PNG Compressor (PNG压缩) -->
+                <a href="tools/png-compressor/index.html" class="phone-app" style="background:#F7CD67;">
+                    <img src="assets/icons/icon-shopping.svg" alt="PNG压缩" class="phone-app-icon">
+                    <span class="phone-app-name">PNG压缩</span>
+                </a>
+
+                <!-- App 5: Level Editor (关卡编辑器) -->
+                <a href="tools/level-editor/index.html" class="phone-app" style="background:#FF9800;">
+                    <img src="assets/icons/icon-diy.svg" alt="关卡编辑器" class="phone-app-icon">
+                    <span class="phone-app-name">关卡编辑</span>
+                </a>
+            </div>
+
+            <!-- Page Indicator -->
+            <div class="phone-page-indicator">
+                <svg width="65" height="32" viewBox="0 0 65 32" fill="none">
+                    <circle cx="18" cy="16" r="6" fill="#4caf50"/>
+                    <circle cx="47" cy="16" r="6" fill="#c8e6c9"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="launcher-footer">
+            <p>ShaoePhoto v1.0.0</p>
+        </div>
+    </div>
+
+    <script>
+        // Update phone time
+        function updatePhoneTime() {
+            var now = new Date();
+            var h = now.getHours().toString().padStart(2, '0');
+            var m = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('phoneTime').textContent = h + ':' + m;
+        }
+        updatePhoneTime();
+        setInterval(updatePhoneTime, 30000);
+    </script>
+</body>
+</html>

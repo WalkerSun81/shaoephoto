@@ -1,0 +1,53 @@
+{
+  "id": "click_sound",
+  "name": "点击音效",
+  "icon": "🔊",
+  "description": "点击后播放音效并切换",
+  "category": "basic",
+  "trigger": {
+    "type": "click",
+    "defaultParams": {
+      "count": 1
+    },
+    "editableParams": [
+      {
+        "key": "clickNode",
+        "label": "点击节点",
+        "type": "node",
+        "required": true
+      },
+      {
+        "key": "count",
+        "label": "点击次数",
+        "type": "number",
+        "defaultValue": 1
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.2,
+        "appearT": 0.2
+      }
+    },
+    {
+      "type": "sound",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "soundVolume": 1
+      }
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ]
+}

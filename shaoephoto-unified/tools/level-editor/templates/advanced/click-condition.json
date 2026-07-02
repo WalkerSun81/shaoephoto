@@ -1,0 +1,43 @@
+{
+  "id": "click_condition",
+  "name": "条件点击",
+  "icon": "🔗",
+  "description": "需要先完成其他差异点才能点击",
+  "category": "advanced",
+  "trigger": {
+    "type": "click",
+    "defaultParams": {
+      "count": 1
+    },
+    "editableParams": [
+      {
+        "key": "clickNode",
+        "label": "点击节点",
+        "type": "node",
+        "required": true
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.2,
+        "appearT": 0.2
+      }
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ],
+  "relations": {
+    "preWorkflows": true,
+    "conditionWorkflows": true
+  }
+}

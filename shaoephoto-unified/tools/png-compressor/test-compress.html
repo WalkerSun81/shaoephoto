@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PNG压缩测试</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+        .test { margin: 20px 0; padding: 15px; background: #16213e; border-radius: 8px; }
+        .pass { color: #00ff88; }
+        .fail { color: #ff4444; }
+        .info { color: #88aaff; }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <h1>PNG压缩功能测试</h1>
+    <div id="results"></div>
+    <canvas id="testCanvas"></canvas>
+
+    <script>
+    var results = document.getElementById('results');
+    function log(msg, type) {
+        var div = document.createElement('div');
+        div.className = 'test ' + (type || 'info');
+        div.textContent = msg;
+        results.appendChild(div);
+    }
+
+    // Test 1: Check CompressionStream support
+    log('=== 测试 1: CompressionStream 支持 ===');
+    if (typeof CompressionStream !== 'undefined') {
+        log('✓ CompressionStream API 可用', 'pass');
+    } else {
+        log('✗ CompressionStream API 不可用，将使用回退方案', 'fail');
+    }
+
+    // Test 2: Create test image and compress
+    log('\n=== 测试 2: PNG-8 压缩测试 ===');
+    var canvas = document.getElementById('testCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // Create a 100x100 test image with limited colors
+    canvas.width = 100;
+    canvas.height = 100;
+
+    // Draw with limited palette
+    var colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff', '#000000'];
+    for (var y = 0; y < 100; y++) {
+        for (var x = 0; x < 100; x++) {
+            ctx.fillStyle = colors[(x + y) % colors.length];
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+
+    // Get image data
+    var imageData = ctx.getImageData(0, 0, 100, 100);
+    log('测试图像: 100x100, 8种颜色', 'info');
+
+    // Test quantization
+    var PngCompressor = {
+        id: 'test',
+        state: { colorCount: 256 }
+    };
+
+    // Load the actual module
+    var script = document.createElement('script');
+    script.src = 'js/modules/png-compressor.js';
+    script.onload = function() {
+        log('模块加载成功', 'pass');
+
+        // Test quantization
+        var quantResult = PngCompressor._quantizeToPalette(imageData.data, 256, 100, 100);
+        log('量化结果: ' + quantResult.palette.length + ' 种颜色', 'info');
+
+        // Test PNG-8 encoding
+        PngCompressor._encodePNG8Async(100, 100, quantResult, function(blob) {
+            if (blob && blob.size > 0) {
+                log('✓ PNG-8 编码成功: ' + blob.size + ' 字节', 'pass');
+
+                // Compare with original
+                canvas.toBlob(function(originalBlob) {
+                    var ratio = Math.round((1 - blob.size / originalBlob.size) * 100);
+                    log('原始大小: ' + originalBlob.size + ' 字节', 'info');
+                    log('压缩后: ' + blob.size + ' 字节', 'info');
+                    log('压缩率: ' + ratio + '%', ratio > 0 ? 'pass' : 'fail');
+                }, 'image/png');
+            } else {
+                log('✗ PNG-8 编码失败: blob 为空或大小为 0', 'fail');
+            }
+        });
+    };
+    document.head.appendChild(script);
+    </script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关卡编辑器 - ShaoePhoto</title>
+    <link rel="stylesheet" href="../../css/animal-theme.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ===== 欢迎页 ===== -->
+    <div id="pageWelcome" class="page page-welcome active">
+        <div class="welcome-center">
+            <div class="welcome-logo">🎮</div>
+            <h1 class="welcome-title">关卡编辑器</h1>
+            <p class="welcome-subtitle">找茬游戏关卡制作工具</p>
+            <div class="welcome-actions">
+                <button class="welcome-btn welcome-btn-primary" id="btnNewProject">
+                    <span class="welcome-btn-icon">+</span>
+                    <span>新建关卡</span>
+                </button>
+                <button class="welcome-btn welcome-btn-secondary" id="btnOpenProject">
+                    <span class="welcome-btn-icon">📂</span>
+                    <span>打开已有</span>
+                </button>
+                <button class="welcome-btn welcome-btn-secondary" id="btnImportGame">
+                    <span class="welcome-btn-icon">🎮</span>
+                    <span>导入游戏配置</span>
+                </button>
+            </div>
+            <div class="welcome-recent" id="recentList">
+                <h3>最近打开</h3>
+                <div id="recentItems"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 基本信息 ===== -->
+    <div id="pageBasicInfo" class="page page-form">
+        <div class="page-header">
+            <button class="back-btn" data-page="pageWelcome">← 返回</button>
+            <h2>关卡基本信息</h2>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <div class="form-section">
+                    <h3>基础配置</h3>
+                    <div class="form-row">
+                        <label>关卡ID</label>
+                        <input type="number" id="levelId" placeholder="如 1002" min="1">
+                    </div>
+                    <div class="form-row">
+                        <label>关卡名称</label>
+                        <input type="text" id="levelName" placeholder="如 Lonely Elderly">
+                    </div>
+                    <div class="form-row">
+                        <label>关卡标题</label>
+                        <input type="text" id="levelTitle" placeholder="如 帮助老人改善生活条件">
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div>
+                            <label>关卡类型</label>
+                            <select id="levelType">
+                                <option value="0">默认</option>
+                                <option value="1">标准</option>
+                                <option value="2">拼图</option>
+                                <option value="3">怀旧</option>
+                                <option value="4">找到并上色</option>
+                                <option value="5">救援</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>难度</label>
+                            <select id="difficulty">
+                                <option value="0">简单</option>
+                                <option value="1" selected>普通</option>
+                                <option value="2">困难</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div>
+                            <label>时间限制(秒)</label>
+                            <input type="number" id="timeLimit" value="120" min="0">
+                        </div>
+                        <div>
+                            <label>差异点数量</label>
+                            <input type="number" id="diffPointCount" value="8" min="1" max="20">
+                            <span class="form-hint">本关需要找几个差异点</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <button class="btn btn-primary" id="btnStep1Next">下一步: 设置画布 →</button>
+        </div>
+    </div>
+
+    <!-- ===== 画布设置 ===== -->
+    <div id="pageCanvasSetup" class="page page-form">
+        <div class="page-header">
+            <button class="back-btn" data-page="pageBasicInfo">← 返回</button>
+            <h2>画布尺寸</h2>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <div class="form-section">
+                    <h3>画布尺寸</h3>
+                    <div class="form-row form-row-2col">
+                        <div>
+                            <label>宽度</label>
+                            <input type="number" id="canvasWidth" value="720" min="100" max="4000">
+                        </div>
+                        <div>
+                            <label>高度</label>
+                            <input type="number" id="canvasHeight" value="1280" min="100" max="4000">
+                        </div>
+                    </div>
+                    <div class="preset-grid">
+                        <button class="preset-btn" data-w="720" data-h="1280">竖屏 720×1280</button>
+                        <button class="preset-btn" data-w="1280" data-h="720">横屏 1280×720</button>
+                        <button class="preset-btn" data-w="750" data-h="1334">iPhone 750×1334</button>
+                        <button class="preset-btn" data-w="1080" data-h="1920">全高清 1080×1920</button>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>背景颜色</h3>
+                    <div class="form-row">
+                        <label>背景色</label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <button class="btn btn-primary" id="btnStep2Next">开始编辑 →</button>
+        </div>
+    </div>
+
+    <!-- ===== 主编辑器 ===== -->
+    <div id="pageEditor" class="page page-editor">
+        <div class="editor-header">
+            <button class="back-btn" data-page="pageCanvasSetup">← 返回</button>
+            <h2 class="editor-title" id="editorTitle">关卡编辑</h2>
+            <div class="editor-toolbar">
+                <button id="btnUndo" class="tool-btn" title="撤销 Ctrl+Z">↩</button>
+                <button id="btnRedo" class="tool-btn" title="重做 Ctrl+Y">↪</button>
+                <span class="toolbar-divider"></span>
+                <button id="btnSaveEditor" class="btn btn-primary btn-sm">保存</button>
+                <button id="btnExportEditor" class="btn btn-success btn-sm">导出</button>
+            </div>
+        </div>
+
+        <div class="editor-body">
+            <!-- 左侧面板 -->
+            <div class="panel panel-left">
+                <div class="panel-tab-bar">
+                    <button class="panel-tab active" data-panel="assetsPanel">素材</button>
+                    <button class="panel-tab" data-panel="nodeTreePanel">节点</button>
+                </div>
+                <div class="panel-content">
+                    <div id="assetsPanel" class="panel-page active">
+                        <div class="panel-toolbar">
+                            <div class="upload-zone-mini" id="uploadZone">
+                                <span class="upload-icon-mini">📁</span>
+                                <span>上传素材</span>
+                                <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+                            </div>
+                        </div>
+                        <div id="editorAssetList" class="asset-list-small"></div>
+                    </div>
+                    <div id="nodeTreePanel" class="panel-page">
+                        <div id="nodeTree" class="node-tree">
+                            <p class="placeholder-text">拖入素材后自动生成节点</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间：画布 -->
+            <div class="panel panel-center">
+                <div class="canvas-toolbar">
+                    <button id="btnSelect" class="tool-btn active" title="选择">↖</button>
+                    <button id="btnRectSelect" class="tool-btn" title="矩形框选差异区">▭</button>
+                    <button id="btnLassoSelect" class="tool-btn" title="套索勾画差异区">⬡</button>
+                    <span class="toolbar-divider"></span>
+                    <button id="btnZoomIn" class="tool-btn" title="放大">+</button>
+                    <button id="btnZoomOut" class="tool-btn" title="缩小">−</button>
+                    <button id="btnFitView" class="tool-btn" title="适应视口">⊞</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                </div>
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="mainCanvas"></canvas>
+                    <div class="canvas-guide" id="canvasGuide">
+                        <div class="guide-step" id="guideStep">
+                            <span class="guide-icon">1</span>
+                            <span class="guide-text">从左侧拖入背景图片到画布</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧面板 -->
+            <div class="panel panel-right">
+                <div class="panel-tab-bar">
+                    <button class="panel-tab active" data-panel="diffListPanel">差异点</button>
+                    <button class="panel-tab" data-panel="propPanel">属性</button>
+                    <button class="panel-tab" data-panel="levelConfigPanel">通关配置</button>
+                    <button class="panel-tab" data-panel="talkPanel">对话</button>
+                </div>
+                <div class="panel-content">
+                    <!-- Tab 1: 差异点列表 -->
+                    <div id="diffListPanel" class="panel-page active">
+                        <div class="diffpoint-header">
+                            <span class="diff-count" id="diffCount">0/8</span>
+                        </div>
+                        <div id="diffPointList" class="diffpoint-list">
+                            <p class="placeholder-text">点击 📌 后在画布上双击添加差异点</p>
+                        </div>
+                    </div>
+                    <!-- Tab 2: 属性面板 -->
+                    <div id="propPanel" class="panel-page">
+                        <div id="propertyPanel" class="property-panel">
+                            <p class="placeholder-text">选择节点查看属性</p>
+                        </div>
+                    </div>
+                    <!-- Tab 3: 通关配置 -->
+                    <div id="levelConfigPanel" class="panel-page">
+                        <div id="levelConfigContent" class="level-config-content"></div>
+                    </div>
+                    <!-- Tab 4: 对话管理 -->
+                    <div id="talkPanel" class="panel-page">
+                        <div class="talk-section">
+                            <div class="talk-section-header">TalkMsg 消息 <button id="btnAddTalkMsg" class="btn btn-sm">+ 添加</button></div>
+                            <div id="talkMsgList" class="talk-msg-list">
+                                <p class="placeholder-text">暂无对话消息</p>
+                            </div>
+                        </div>
+                        <div class="talk-section">
+                            <div class="talk-section-header">Talks 入口配置</div>
+                            <div id="talksConfig" class="talks-config">
+                                <div class="config-row">
+                                    <label class="config-label">startTalk</label>
+                                    <input class="config-input" type="text" id="talksStartTalk" placeholder="JSON数组，如 [1]">
+                                </div>
+                                <div class="config-row">
+                                    <label class="config-label">talk</label>
+                                    <input class="config-input" type="number" id="talksTalk" value="1" min="0">
+                                </div>
+                                <div class="config-row">
+                                    <label class="config-label">nexttalk</label>
+                                    <input class="config-input" type="number" id="talksNextTalk" value="2" min="-1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部流程检查栏 -->
+        <div class="editor-footer" id="editorFooter"></div>
+    </div>
+
+    <!-- ===== Modal: 差异点配置 ===== -->
+    <div id="diffPointModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="diffPointModalTitle">配置差异点</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">差异点名称</label>
+                    <input class="form-input" type="text" id="dpName" placeholder="如：花盆">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">事件描述</label>
+                    <input class="form-input" type="text" id="dpText" placeholder="如：点击花盆">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">触发方式</label>
+                    <select class="form-input" id="dpTriggerType">
+                        <option value="click">点击</option>
+                        <option value="drag">拖动</option>
+                        <option value="slide">滑动</option>
+                    </select>
+                </div>
+                <div class="form-row form-row-2col">
+                    <div class="form-group">
+                        <label class="form-label">变体A图片（原始）</label>
+                        <div class="dp-image-selector">
+                            <button class="btn btn-sm btn-secondary" id="btnSelectOldImage">选择</button>
+                            <span class="dp-image-preview" id="dpOldImagePreview">未选择</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">变体B图片（触发后）</label>
+                        <div class="dp-image-selector">
+                            <button class="btn btn-sm btn-secondary" id="btnSelectNewImage">选择</button>
+                            <span class="dp-image-preview" id="dpNewImagePreview">未选择</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section" style="margin-top:12px;">
+                    <h3>分支配置</h3>
+                    <div class="form-row form-row-2col">
+                        <div>
+                            <label>正确结果</label>
+                            <select class="form-input" id="dpCorrectResult">
+                                <option value="Collect">收集事件</option>
+                                <option value="Pass">通关</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>正确分支路径</label>
+                            <select class="form-input" id="dpCorrectWorks">
+                                <option value="3">路径3（正确）</option>
+                                <option value="1">路径1</option>
+                                <option value="4">路径4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div>
+                            <label>错误结果</label>
+                            <select class="form-input" id="dpWrongResult">
+                                <option value="Fail">失败/扣分</option>
+                                <option value="Collect">仍然收集</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>错误分支路径</label>
+                            <select class="form-input" id="dpWrongWorks">
+                                <option value="2">路径2（错误）</option>
+                                <option value="1">路径1</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnDiffPointCancel" class="btn btn-secondary">取消</button>
+                <button id="btnDiffPointSave" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Modal: 导出选项 ===== -->
+    <div id="exportModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3>导出关卡</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="export-option" id="btnExportGame">
+                    <span class="export-option-icon">🎮</span>
+                    <div>
+                        <div class="export-option-title">导出游戏格式</div>
+                        <div class="export-option-desc">导出 JSON 配置，用于游戏加载</div>
+                    </div>
+                </button>
+                <button class="export-option" id="btnExportJson">
+                    <span class="export-option-icon">📄</span>
+                    <div>
+                        <div class="export-option-title">导出编辑器格式</div>
+                        <div class="export-option-desc">用于重新导入编辑器继续编辑</div>
+                    </div>
+                </button>
+                <button class="export-option" id="btnExportMerge">
+                    <span class="export-option-icon">🔄</span>
+                    <div>
+                        <div class="export-option-title">合并导出</div>
+                        <div class="export-option-desc">合并到已有的 GameJsonCfg.json</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/animal-utils.js"></script>
+    <script src="js/core/module-loader.js"></script>
+    <script src="js/core/canvas-engine.js"></script>
+    <script src="js/core/history.js"></script>
+    <script src="js/core/serializer.js"></script>
+    <script src="js/modules/scene-canvas.js"></script>
+    <script src="js/modules/node-tree.js"></script>
+    <script src="js/modules/property-panel.js"></script>
+    <script src="js/modules/workflow-editor.js"></script>
+    <script src="js/modules/workflow-template.js"></script>
+    <script src="js/modules/level-config.js"></script>
+    <script src="js/modules/config-table.js"></script>
+    <script src="js/modules/data-io.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

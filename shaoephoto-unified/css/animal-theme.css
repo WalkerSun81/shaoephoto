@@ -1,0 +1,687 @@
+/**
+ * Animal Island Theme — Base Design Tokens & Components
+ * 《动物森友会》风格基础样式
+ * Based on animal-island-ui design system
+ */
+
+/* 注：Google Fonts 已移除，改用系统默认字体（避免国内网络超时 30s） */
+
+/* ============================================
+   1. Design Tokens (CSS Custom Properties)
+   ============================================ */
+:root {
+    /* --- Color / Accent --- */
+    --animal-primary-color: #19c8b9;
+    --animal-primary-color-hover: #3dd4c6;
+    --animal-primary-color-active: #50B9AB;
+    --animal-primary-color-bg: #e6f9f6;
+
+    /* --- Color / Semantic --- */
+    --animal-success-color: #6fba2c;
+    --animal-success-color-hover: #85cc45;
+    --animal-success-color-active: #5a9e1e;
+
+    --animal-warning-color: #f5c31c;
+    --animal-warning-color-hover: #f7d04a;
+    --animal-warning-color-active: #dba90e;
+
+    --animal-error-color: #e05a5a;
+    --animal-error-color-hover: #e87878;
+    --animal-error-color-active: #c94444;
+
+    /* --- Color / Neutral --- */
+    --animal-text-color: #794f27;
+    --animal-text-color-secondary: #9f927d;
+    --animal-text-color-disabled: #c4b89e;
+
+    --animal-bg-color: #f8f8f0;
+    --animal-bg-color-secondary: #f0e8d8;
+    --animal-bg-color-disabled: #f0ece2;
+    --animal-bg-card: #f7f3df;
+
+    --animal-border-color: #aaa69d;
+    --animal-border-color-hover: #827157;
+    --animal-border-color-light: #e8e2d6;
+
+    /* --- Typography --- */
+    --animal-font-family: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --animal-font-size-sm: 12px;
+    --animal-font-size-base: 14px;
+    --animal-font-size-lg: 16px;
+    --animal-line-height-base: 1.5715;
+
+    /* --- Spacing --- */
+    --animal-spacing-xs: 4px;
+    --animal-spacing-sm: 8px;
+    --animal-spacing-md: 12px;
+    --animal-spacing-lg: 16px;
+    --animal-spacing-xl: 24px;
+
+    /* --- Border Radius --- */
+    --animal-border-radius-sm: 16px;
+    --animal-border-radius-base: 18px;
+    --animal-border-radius-lg: 24px;
+    --animal-border-radius-pill: 50px;
+    --animal-border-width: 2px;
+
+    /* --- Shadow --- */
+    --animal-shadow-sm: 0 2px 4px 0 rgba(61, 52, 40, 0.06);
+    --animal-shadow-base: 0 3px 10px 0 rgba(61, 52, 40, 0.1);
+    --animal-shadow-lg: 0 8px 24px 0 rgba(61, 52, 40, 0.14);
+    --animal-btn-shadow: 0 5px 0 0 #bdaea0;
+    --animal-input-shadow: 0 3px 0 0 #d4c9b4;
+
+    /* --- Motion --- */
+    --animal-motion-duration-fast: 0.15s;
+    --animal-motion-duration-base: 0.25s;
+    --animal-motion-duration-slow: 0.35s;
+    --animal-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* --- Size --- */
+    --animal-height-sm: 32px;
+    --animal-height-base: 40px;
+    --animal-height-lg: 48px;
+}
+
+/* ============================================
+   3. Base Reset
+   ============================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: var(--animal-font-family);
+    font-size: var(--animal-font-size-base);
+    line-height: var(--animal-line-height-base);
+    color: var(--animal-text-color);
+    background: var(--animal-bg-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   4. Scrollbar Styling
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c4b89e;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9f927d;
+}
+
+/* ============================================
+   5. Selection & Focus
+   ============================================ */
+::selection {
+    background: rgba(25, 200, 185, 0.15);
+    color: var(--animal-text-color);
+}
+
+:focus-visible {
+    outline: 2px solid var(--animal-warning-color);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   6. Unified Button — Base
+   ============================================ */
+.unified-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--animal-spacing-sm);
+    padding: 8px 20px;
+    font-family: var(--animal-font-family);
+    font-size: var(--animal-font-size-base);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    border: var(--animal-border-width) solid transparent;
+    border-radius: var(--animal-border-radius-pill);
+    transition: all var(--animal-motion-duration-base) var(--animal-motion-ease);
+    user-select: none;
+    outline: none;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    box-shadow: var(--animal-shadow-sm);
+}
+
+.unified-btn:focus-visible {
+    outline: 2px solid var(--animal-primary-color);
+    outline-offset: 2px;
+}
+
+.unified-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+}
+
+.unified-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   7. Unified Button — Primary (3D press effect)
+   ============================================ */
+.unified-btn-primary {
+    color: #794f27;
+    background: #f8f8f0;
+    border-color: #f8f8f0;
+    box-shadow: 0 5px 0 0 #bdaea0;
+}
+
+.unified-btn-primary:hover:not(:disabled) {
+    background: #f8f8f0;
+    border-color: #f8f8f0;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 0 0 #bdaea0;
+}
+
+.unified-btn-primary:active:not(:disabled) {
+    background: #f8f8f0;
+    border-color: #f8f8f0;
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 0 #bdaea0;
+}
+
+/* ============================================
+   8. Unified Button — Secondary
+   ============================================ */
+.unified-btn-secondary {
+    color: var(--animal-text-color);
+    background: var(--animal-bg-color);
+    border-color: var(--animal-border-color);
+}
+
+.unified-btn-secondary:hover:not(:disabled) {
+    color: var(--animal-primary-color);
+    border-color: var(--animal-primary-color);
+    box-shadow: var(--animal-shadow-base);
+    transform: translateY(-1px);
+}
+
+.unified-btn-secondary:active:not(:disabled) {
+    color: var(--animal-primary-color-active);
+    border-color: var(--animal-primary-color-active);
+    transform: translateY(0);
+    box-shadow: var(--animal-shadow-sm);
+}
+
+/* ============================================
+   9. Unified Button — Danger
+   ============================================ */
+.unified-btn-danger {
+    color: #fff;
+    background: var(--animal-error-color);
+    border-color: var(--animal-error-color);
+    box-shadow: 0 5px 0 0 var(--animal-error-color-active);
+}
+
+.unified-btn-danger:hover:not(:disabled) {
+    background: var(--animal-error-color-hover);
+    border-color: var(--animal-error-color-hover);
+    box-shadow: 0 6px 0 0 var(--animal-error-color-active);
+    transform: translateY(-1px);
+}
+
+.unified-btn-danger:active:not(:disabled) {
+    background: var(--animal-error-color-active);
+    border-color: var(--animal-error-color-active);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 0 var(--animal-error-color-active);
+}
+
+/* ============================================
+   10. Unified Input
+   ============================================ */
+.unified-input {
+    padding: 8px 18px;
+    font-size: var(--animal-font-size-base);
+    font-family: var(--animal-font-family);
+    background: var(--animal-bg-card);
+    border: var(--animal-border-width) solid #c4b89e;
+    border-radius: var(--animal-border-radius-pill);
+    color: var(--animal-text-color);
+    outline: none;
+    transition: all var(--animal-motion-duration-base) var(--animal-motion-ease);
+    box-shadow: var(--animal-input-shadow);
+}
+
+.unified-input:hover:not(:disabled) {
+    border-color: #a89878;
+}
+
+.unified-input:focus {
+    border-color: var(--animal-primary-color);
+    box-shadow: 0 0 0 3px rgba(25, 200, 185, 0.15);
+}
+
+.unified-input::placeholder {
+    color: var(--animal-text-color-disabled);
+    font-weight: 400;
+}
+
+.unified-input:disabled {
+    background: var(--animal-bg-color-disabled);
+    border-color: #d4c9b4;
+    box-shadow: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   11. Unified Toast
+   ============================================ */
+.unified-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    padding: 12px 24px;
+    background: var(--animal-bg-card);
+    color: var(--animal-text-color);
+    border-radius: var(--animal-border-radius-base);
+    font-size: var(--animal-font-size-base);
+    font-weight: 500;
+    font-family: var(--animal-font-family);
+    box-shadow: var(--animal-shadow-lg);
+    z-index: 100000;
+    opacity: 0;
+    transition: all var(--animal-motion-duration-base) var(--animal-motion-ease);
+    border-left: 3px solid var(--animal-success-color);
+}
+
+.unified-toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.unified-toast.error {
+    border-left-color: var(--animal-error-color);
+    background: #fef0f0;
+    color: var(--animal-error-color);
+}
+
+/* ============================================
+   12. Unified Modal
+   ============================================ */
+.unified-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(61, 52, 40, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    animation: animal-fade-in 0.25s ease;
+}
+
+.unified-modal {
+    background: var(--animal-bg-card);
+    border-radius: var(--animal-border-radius-lg);
+    width: 400px;
+    max-width: 90vw;
+    max-height: 80vh;
+    box-shadow: var(--animal-shadow-lg);
+    overflow: hidden;
+    animation: animal-slide-up 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.unified-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 24px 16px;
+    border-bottom: var(--animal-border-width) solid var(--animal-border-color-light);
+}
+
+.unified-modal-header h3 {
+    font-size: var(--animal-font-size-lg);
+    font-weight: 700;
+    color: var(--animal-text-color);
+}
+
+.unified-modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    color: rgba(114, 93, 66, 0.6);
+    cursor: pointer;
+    transition: all var(--animal-motion-duration-fast);
+}
+
+.unified-modal-close:hover {
+    background: rgba(114, 93, 66, 0.1);
+    color: var(--animal-text-color);
+}
+
+.unified-modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: var(--animal-font-size-base);
+    color: #8a7b66;
+    line-height: 1.6;
+}
+
+.unified-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--animal-spacing-md);
+    padding: 16px 24px 20px;
+    border-top: var(--animal-border-width) solid var(--animal-border-color-light);
+}
+
+/* ============================================
+   13. Unified Loading
+   ============================================ */
+.unified-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(248, 248, 240, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+}
+
+.unified-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px;
+    background: var(--animal-bg-card);
+    border-radius: var(--animal-border-radius-lg);
+    box-shadow: var(--animal-shadow-lg);
+}
+
+.unified-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--animal-border-color-light);
+    border-top-color: var(--animal-primary-color);
+    border-radius: 50%;
+    animation: animal-spin 1s linear infinite;
+}
+
+.unified-loading-text {
+    font-size: var(--animal-font-size-base);
+    color: var(--animal-text-color-secondary);
+    font-weight: 500;
+}
+
+/* ============================================
+   14. Keyframe Animations
+   ============================================ */
+@keyframes animal-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes animal-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes animal-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   15. NookPhone Card Color Palette
+   ============================================ */
+.card-base {
+    border-radius: 20px;
+    padding: 16px 24px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.card-base:hover {
+    transform: translateY(-2px);
+}
+
+/* Default warm card */
+.card-default {
+    background: #f7f3df;
+    color: #725d42;
+}
+
+/* App Pink */
+.card-app-pink {
+    background: #f8a6b2;
+    color: #fff;
+}
+
+/* Purple */
+.card-purple {
+    background: #b77dee;
+    color: #fff;
+}
+
+/* App Blue */
+.card-app-blue {
+    background: #889df0;
+    color: #fff;
+}
+
+/* App Yellow */
+.card-app-yellow {
+    background: #f7cd67;
+    color: #725d42;
+}
+
+/* App Orange */
+.card-app-orange {
+    background: #e59266;
+    color: #fff;
+}
+
+/* App Teal */
+.card-app-teal {
+    background: #82d5bb;
+    color: #fff;
+}
+
+/* App Green */
+.card-app-green {
+    background: #8ac68a;
+    color: #fff;
+}
+
+/* App Red */
+.card-app-red {
+    background: #fc736d;
+    color: #fff;
+}
+
+/* Lime Green */
+.card-lime-green {
+    background: #d1da49;
+    color: #3d5a1a;
+}
+
+/* Yellow-Green */
+.card-yellow-green {
+    background: #ecdf52;
+    color: #725d42;
+}
+
+/* Brown */
+.card-brown {
+    background: #9a835a;
+    color: #fff;
+}
+
+/* Warm Peach Pink */
+.card-warm-peach-pink {
+    background: #e18c6f;
+    color: #fff;
+}
+
+/* ============================================
+   16. Custom Cursor
+   ============================================ */
+html, body {
+    cursor: url('../assets/cursor/cursor-icon.png') 4 0, default;
+}
+
+a, button, .plugin-card, .phone-app, input[type="submit"],
+input[type="button"], select, [role="button"], .tt-btn,
+.tt-mode-tab, .tt-sub-tab, .tt-toggle-overlay-btn,
+.tt-splitdlg-close, .tt-download-header button,
+.tt-format-btn, .tt-collider-type-btn {
+    cursor: url('../assets/cursor/cursor-icon.png') 4 0, pointer;
+}
+
+input[type="text"], input[type="number"], textarea {
+    cursor: url('../assets/cursor/cursor-icon.png') 4 0, text;
+}
+
+/* ============================================
+   17. Decorative Dividers
+   ============================================ */
+.animal-divider {
+    display: block;
+    width: 100%;
+    height: 14px;
+    margin: var(--animal-spacing-lg) 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: none;
+    outline: none;
+}
+
+.animal-divider-line-brown {
+    background-image: url('../assets/dividers/divider-line-brown.svg');
+}
+
+.animal-divider-line-teal {
+    background-image: url('../assets/dividers/divider-line-teal.svg');
+}
+
+.animal-divider-wave-yellow {
+    background-image: url('../assets/dividers/wave-yellow.svg');
+    height: 10px;
+}
+
+.animal-divider-dashed-brown {
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #c4b89e 0px,
+        #c4b89e 12px,
+        transparent 12px,
+        transparent 24px
+    );
+}
+
+.animal-divider-dashed-teal {
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #19c8b9 0px,
+        #19c8b9 12px,
+        transparent 12px,
+        transparent 24px
+    );
+}
+
+/* ============================================
+   18. Decorative Footer
+   ============================================ */
+.animal-footer {
+    width: 100%;
+    height: 80px;
+    background: url('../assets/footer/footer-sea.svg') center / contain no-repeat;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   19. SVG Blob Clip-Path (Modal/Dialog shape)
+   ============================================ */
+.animal-blob-dialog {
+    clip-path: url(#animal-modal-clip);
+    background: #f7f3df;
+    color: #807359;
+    padding: 48px 48px 32px 48px;
+    font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+}
+
+/* ============================================
+   20. Typewriter Animation CSS
+   ============================================ */
+.typewriter-cursor::after {
+    content: '|';
+    animation: typewriter-blink 1s steps(1) infinite;
+    color: #725d42;
+    font-weight: 700;
+}
+
+@keyframes typewriter-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ============================================
+   21. Bounce Animation (for app icons)
+   ============================================ */
+@keyframes animal-icon-bounce {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.2) rotate(-5deg); }
+    50% { transform: scale(1.1) rotate(-4deg); }
+    75% { transform: scale(1.15) rotate(-3deg); }
+}
+
+.animal-bounce:hover {
+    animation: animal-icon-bounce 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   22. Typewriter JS Utility (inline)
+   ============================================ */
+.typewriter-toast {
+    overflow: hidden;
+    white-space: nowrap;
+}

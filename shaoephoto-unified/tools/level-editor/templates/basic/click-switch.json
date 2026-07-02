@@ -1,0 +1,90 @@
+{
+  "id": "click_switch",
+  "name": "点击切换",
+  "icon": "⚡",
+  "description": "最基础的差异点交互：点击节点后切换显示，收集一个事件",
+  "category": "basic",
+  "trigger": {
+    "type": "click",
+    "defaultParams": {
+      "count": 1,
+      "time": 0.5
+    },
+    "editableParams": [
+      {
+        "key": "clickNode",
+        "label": "点击节点",
+        "type": "node",
+        "required": true
+      },
+      {
+        "key": "count",
+        "label": "点击次数",
+        "type": "number",
+        "defaultValue": 1,
+        "min": 1
+      },
+      {
+        "key": "time",
+        "label": "连击间隔",
+        "type": "number",
+        "defaultValue": 0.5,
+        "min": 0.1
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.2,
+        "appearT": 0.2
+      },
+      "editableParams": [
+        {
+          "key": "old",
+          "label": "旧节点",
+          "type": "node",
+          "isArray": true
+        },
+        {
+          "key": "new",
+          "label": "新节点",
+          "type": "node",
+          "isArray": true
+        },
+        {
+          "key": "disappearT",
+          "label": "消失时间",
+          "type": "number",
+          "defaultValue": 0.2,
+          "min": 0
+        },
+        {
+          "key": "appearT",
+          "label": "出现时间",
+          "type": "number",
+          "defaultValue": 0.2,
+          "min": 0
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0,
+      "editableParams": [
+        {
+          "key": "val",
+          "label": "事件ID",
+          "type": "number",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

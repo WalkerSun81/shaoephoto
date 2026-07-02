@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PNG压缩自动测试</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+        .test { margin: 10px 0; padding: 10px; background: #16213e; border-radius: 8px; }
+        .pass { color: #00ff88; border-left: 3px solid #00ff88; }
+        .fail { color: #ff4444; border-left: 3px solid #ff4444; }
+        .info { color: #88aaff; border-left: 3px solid #88aaff; }
+        h1 { color: #00ff88; }
+        h2 { color: #88aaff; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>PNG压缩功能自动测试</h1>
+    <div id="results"></div>
+
+    <script src="js/core/module-loader.js"></script>
+    <script src="js/modules/png-compressor.js"></script>
+    <script>
+    var results = document.getElementById('results');
+    var testIndex = 0;
+
+    function log(msg, type) {
+        var div = document.createElement('div');
+        div.className = 'test ' + (type || 'info');
+        div.textContent = msg;
+        results.appendChild(div);
+    }
+
+    function createTestImage(width, height, colors) {
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+                var colorIndex = (x + y) % colors.length;
+                ctx.fillStyle = colors[colorIndex];
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        return canvas;
+    }
+
+    function runTest(testCase, callback) {
+        testIndex++;
+        log('测试 ' + testIndex + ': ' + testCase.name);
+
+        var canvas = createTestImage(testCase.width, testCase.height, testCase.colors);
+        var ctx = canvas.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, testCase.width, testCase.height);
+
+        // 测试量化
+        var quantResult = PngCompressor._quantizeToPalette(
+            imageData.data,
+            256,
+            testCase.width,
+            testCase.height
+        );
+        log('  量化结果: ' + quantResult.palette.length + ' 种颜色', 'info');
+
+        // 测试PNG-8编码
+        PngCompressor._encodePNG8Async(
+            testCase.width,
+            testCase.height,
+            quantResult,
+            function(blob) {
+                if (blob && blob.size > 0) {
+                    log('  ✓ PNG-8编码成功: ' + blob.size + ' 字节', 'pass');
+
+                    // 与原始PNG比较
+                    canvas.toBlob(function(originalBlob) {
+                        var ratio = Math.round((1 - blob.size / originalBlob.size) * 100);
+                        log('  原始大小: ' + originalBlob.size + ' 字节', 'info');
+                        log('  压缩后: ' + blob.size + ' 字节', 'info');
+                        log('  压缩率: ' + ratio + '%', ratio > 0 ? 'pass' : 'fail');
+
+                        if (callback) callback();
+                    }, 'image/png');
+                } else {
+                    log('  ✗ PNG-8编码失败: blob为空或大小为0', 'fail');
+                    if (callback) callback();
+                }
+            }
+        );
+    }
+
+    // 测试用例
+    var testCases = [
+        {
+            name: '简单8色图像 (100x100)',
+            width: 100,
+            height: 100,
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff', '#000000']
+        },
+        {
+            name: '复杂256色图像 (200x200)',
+            width: 200,
+            height: 200,
+            colors: Array.from({length: 256}, function(_, i) {
+                return '#' + ((1 << 24) + (i << 16) + (i << 8) + i).toString(16).slice(1);
+            })
+        },
+        {
+            name: '大图像 (500x500)',
+            width: 500,
+            height: 500,
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+        }
+    ];
+
+    // 运行所有测试
+    function runAllTests() {
+        var index = 0;
+
+        function next() {
+            if (index < testCases.length) {
+                runTest(testCases[index], function() {
+                    index++;
+                    setTimeout(next, 100);
+                });
+            } else {
+                log('\n=== 测试完成 ===', 'info');
+            }
+        }
+
+        next();
+    }
+
+    // 检查CompressionStream支持
+    log('=== 环境检查 ===');
+    if (typeof CompressionStream !== 'undefined') {
+        log('✓ CompressionStream API 可用', 'pass');
+    } else {
+        log('✗ CompressionStream API 不可用，将使用回退方案', 'fail');
+    }
+
+    // 开始测试
+    log('\n=== 开始测试 ===');
+    runAllTests();
+    </script>
+</body>
+</html>

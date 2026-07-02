@@ -1,0 +1,37 @@
+{
+  "id": "slide_switch",
+  "name": "滑动切换",
+  "icon": "👆",
+  "description": "滑动触发切换",
+  "category": "basic",
+  "trigger": {
+    "type": "slide",
+    "defaultParams": {},
+    "editableParams": [
+      {
+        "key": "destNode",
+        "label": "目标区域",
+        "type": "node",
+        "required": true
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.2,
+        "appearT": 0.2
+      }
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "id": "drag_to_target",
+  "name": "拖动到目标",
+  "icon": "🖱️",
+  "description": "拖动物品到指定位置触发",
+  "category": "basic",
+  "trigger": {
+    "type": "drag",
+    "defaultParams": {
+      "dragEnd": "Back",
+      "dragfinish": "Disappear"
+    },
+    "editableParams": [
+      {
+        "key": "dragNode",
+        "label": "可拖节点",
+        "type": "node",
+        "required": true
+      },
+      {
+        "key": "destNode",
+        "label": "目标区域",
+        "type": "node",
+        "required": true
+      },
+      {
+        "key": "dragEnd",
+        "label": "结束逻辑",
+        "type": "select",
+        "options": ["Back", "AttachTarget", "Any"],
+        "defaultValue": "Back"
+      },
+      {
+        "key": "dragfinish",
+        "label": "完成逻辑",
+        "type": "select",
+        "options": ["Back", "Disappear", "Any"],
+        "defaultValue": "Disappear"
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "node",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "disappearT": 0.3,
+        "appearT": 0.3
+      },
+      "editableParams": [
+        {
+          "key": "old",
+          "label": "旧节点",
+          "type": "node",
+          "isArray": true
+        },
+        {
+          "key": "new",
+          "label": "新节点",
+          "type": "node",
+          "isArray": true
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0,
+      "editableParams": [
+        {
+          "key": "val",
+          "label": "事件ID",
+          "type": "number",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

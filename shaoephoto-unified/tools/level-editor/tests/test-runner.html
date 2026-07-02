@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关卡编辑器 - 测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            background: #f5f0e8;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d5a4a;
+            border-bottom: 2px solid #82D5BB;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            margin-bottom: 20px;
+        }
+        .test-suite-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #5a4a3a;
+        }
+        .test-case {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #f9f7f2;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .test-pass {
+            background: #4caf50;
+            color: white;
+        }
+        .test-fail {
+            background: #e74c3c;
+            color: white;
+        }
+        .test-pending {
+            background: #f0ebe0;
+            color: #8a7a6a;
+        }
+        .test-name {
+            flex: 1;
+        }
+        .test-result {
+            font-size: 0.85em;
+            color: #8a7a6a;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            background: #82D5BB;
+            color: #2d5a4a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #6bc4aa;
+        }
+        #testOutput {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2d2d2d;
+            color: #00ff00;
+            font-family: monospace;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>关卡编辑器 - 测试用例</h1>
+
+        <div>
+            <button onclick="runAllTests()">运行所有测试</button>
+            <button onclick="showOutput()">显示控制台输出</button>
+        </div>
+
+        <div id="testResults"></div>
+        <div id="testOutput"></div>
+    </div>
+
+    <script>
+        // Test framework
+        var TestRunner = {
+            results: [],
+            passed: 0,
+            failed: 0,
+
+            assert: function(condition, message) {
+                if (condition) {
+                    this.passed++;
+                    this.results.push({ name: message, status: 'pass' });
+                } else {
+                    this.failed++;
+                    this.results.push({ name: message, status: 'fail' });
+                }
+            },
+
+            assertEqual: function(actual, expected, message) {
+                this.assert(actual === expected, message + ' (期望: ' + expected + ', 实际: ' + actual + ')');
+            },
+
+            assertNotNull: function(value, message) {
+                this.assert(value !== null && value !== undefined, message);
+            },
+
+            render: function() {
+                var html = '';
+
+                // Group by suite
+                var suites = {};
+                this.results.forEach(function(result) {
+                    var suite = result.name.split(':')[0] || '其他';
+                    if (!suites[suite]) suites[suite] = [];
+                    suites[suite].push(result);
+                });
+
+                Object.keys(suites).forEach(function(suite) {
+                    html += '<div class="test-suite">';
+                    html += '<div class="test-suite-title">' + suite + '</div>';
+                    suites[suite].forEach(function(result) {
+                        var statusClass = result.status === 'pass' ? 'test-pass' : 'test-fail';
+                        var statusText = result.status === 'pass' ? '✓' : '✗';
+                        html += '<div class="test-case">';
+                        html += '<span class="test-status ' + statusClass + '">' + statusText + '</span>';
+                        html += '<span class="test-name">' + result.name.split(':')[1] + '</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                });
+
+                html += '<div class="summary">';
+                html += '总计: ' + (this.passed + this.failed) + ' | ';
+                html += '通过: <span style="color:#4caf50">' + this.passed + '</span> | ';
+                html += '失败: <span style="color:#e74c3c">' + this.failed + '</span>';
+                html += '</div>';
+
+                document.getElementById('testResults').innerHTML = html;
+            },
+
+            reset: function() {
+                this.results = [];
+                this.passed = 0;
+                this.failed = 0;
+            }
+        };
+
+        // Test cases
+        function runAllTests() {
+            TestRunner.reset();
+
+            // Module Loader Tests
+            testModuleLoader();
+
+            // Canvas Engine Tests
+            testCanvasEngine();
+
+            // History Manager Tests
+            testHistoryManager();
+
+            // Serializer Tests
+            testSerializer();
+
+            // Template Tests
+            testTemplates();
+
+            // Workflow Tests
+            testWorkflows();
+
+            TestRunner.render();
+        }
+
+        function testModuleLoader() {
+            TestRunner.assert(typeof ModuleLoader !== 'undefined', 'ModuleLoader: 模块加载器存在');
+            TestRunner.assert(typeof ModuleLoader.register === 'function', 'ModuleLoader: register 方法存在');
+            TestRunner.assert(typeof ModuleLoader.activate === 'function', 'ModuleLoader: activate 方法存在');
+
+            // Test register and activate
+            var testModule = {
+                id: 'test-module',
+                name: 'Test Module',
+                activated: false,
+                activate: function() { this.activated = true; },
+                deactivate: function() { this.activated = false; }
+            };
+
+            ModuleLoader.register(testModule);
+            TestRunner.assert(ModuleLoader.getModule('test-module') !== null, 'ModuleLoader: 注册模块成功');
+
+            ModuleLoader.activate('test-module');
+            TestRunner.assert(testModule.activated, 'ModuleLoader: 激活模块成功');
+        }
+
+        function testCanvasEngine() {
+            TestRunner.assert(typeof CanvasEngine !== 'undefined', 'CanvasEngine: 画布引擎存在');
+            TestRunner.assert(typeof CanvasEngine.addNode === 'function', 'CanvasEngine: addNode 方法存在');
+            TestRunner.assert(typeof CanvasEngine.removeNode === 'function', 'CanvasEngine: removeNode 方法存在');
+
+            // Test add node
+            var node = { id: 'test-node', name: 'Test', x: 100, y: 100, width: 50, height: 50 };
+            CanvasEngine.addNode(node);
+            TestRunner.assert(CanvasEngine.getNodes().length === 1, 'CanvasEngine: 添加节点成功');
+
+            // Test remove node
+            CanvasEngine.removeNode(node);
+            TestRunner.assert(CanvasEngine.getNodes().length === 0, 'CanvasEngine: 删除节点成功');
+        }
+
+        function testHistoryManager() {
+            TestRunner.assert(typeof HistoryManager !== 'undefined', 'HistoryManager: 历史管理器存在');
+            TestRunner.assert(typeof HistoryManager.execute === 'function', 'HistoryManager: execute 方法存在');
+            TestRunner.assert(typeof HistoryManager.undo === 'function', 'HistoryManager: undo 方法存在');
+
+            // Test undo/redo
+            var value = 0;
+            HistoryManager.execute(
+                function() { value = 1; },
+                function() { value = 0; },
+                'Test action'
+            );
+
+            TestRunner.assertEqual(value, 1, 'HistoryManager: 执行操作成功');
+            HistoryManager.undo();
+            TestRunner.assertEqual(value, 0, 'HistoryManager: 撤销操作成功');
+            HistoryManager.redo();
+            TestRunner.assertEqual(value, 1, 'HistoryManager: 重做操作成功');
+        }
+
+        function testSerializer() {
+            TestRunner.assert(typeof Serializer !== 'undefined', 'Serializer: 序列化器存在');
+            TestRunner.assert(typeof Serializer.serialize === 'function', 'Serializer: serialize 方法存在');
+            TestRunner.assert(typeof Serializer.deserialize === 'function', 'Serializer: deserialize 方法存在');
+            TestRunner.assert(typeof Serializer.toGameFormat === 'function', 'Serializer: toGameFormat 方法存在');
+            TestRunner.assert(typeof Serializer.fromGameFormat === 'function', 'Serializer: fromGameFormat 方法存在');
+            TestRunner.assert(typeof Serializer.importGameJsonCfgFile === 'function', 'Serializer: importGameJsonCfgFile 方法存在');
+            TestRunner.assert(typeof Serializer.exportGameMergeFile === 'function', 'Serializer: exportGameMergeFile 方法存在');
+
+            // Test serialize/deserialize (v2 format)
+            var testData = { level: { id: 1002, name: 'Test Level' }, diffPoints: [], talkMsgs: [], talks: null };
+            var serialized = Serializer.serialize(testData);
+            TestRunner.assertNotNull(serialized, 'Serializer: 序列化成功');
+
+            var deserialized = Serializer.deserialize(serialized);
+            TestRunner.assertEqual(deserialized.level.id, 1002, 'Serializer: 反序列化成功');
+
+            // Test toGameFormat
+            var gameData = Serializer.toGameFormat(testData);
+            TestRunner.assertNotNull(gameData.Level, 'Serializer: toGameFormat 生成 Level 表');
+            TestRunner.assertNotNull(gameData.EventInfo, 'Serializer: toGameFormat 生成 EventInfo 表');
+            TestRunner.assertNotNull(gameData.TalkInfo, 'Serializer: toGameFormat 生成 TalkInfo 表');
+            TestRunner.assertNotNull(gameData.TalkMsg, 'Serializer: toGameFormat 生成 TalkMsg 表');
+            TestRunner.assertNotNull(gameData.Talks, 'Serializer: toGameFormat 生成 Talks 表');
+
+            // Test v1 compatibility
+            var v1Data = { version: '1.0.0', level: { id: 1001, name: 'V1 Level' }, workflows: [{ id: 'wf1', name: 'Test', triggerType: 'click' }] };
+            var v1Serialized = JSON.stringify(v1Data);
+            var migrated = Serializer.deserialize(v1Serialized);
+            TestRunner.assert(Array.isArray(migrated.diffPoints), 'Serializer: v1 数据自动迁移到 diffPoints');
+        }
+
+        function testTemplates() {
+            TestRunner.assert(typeof WorkflowTemplateModule !== 'undefined', 'Templates: 模板模块存在');
+            TestRunner.assert(typeof WorkflowTemplateModule.getTemplate === 'function', 'Templates: getTemplate 方法存在');
+
+            // Test get template
+            var template = WorkflowTemplateModule.getTemplate('click_switch');
+            TestRunner.assertNotNull(template, 'Templates: 获取模板成功');
+            TestRunner.assertEqual(template.name, '点击切换', 'Templates: 模板名称正确');
+        }
+
+        function testWorkflows() {
+            TestRunner.assert(typeof WorkflowEditorModule !== 'undefined', 'DiffPoints: 差异点模块存在');
+            TestRunner.assert(typeof WorkflowEditorModule.addDiffPoint === 'function', 'DiffPoints: addDiffPoint 方法存在');
+            TestRunner.assert(typeof WorkflowEditorModule.getDiffPoints === 'function', 'DiffPoints: getDiffPoints 方法存在');
+            TestRunner.assert(typeof WorkflowEditorModule.getDiffPoint === 'function', 'DiffPoints: getDiffPoint 方法存在');
+            TestRunner.assert(typeof WorkflowEditorModule.updateDiffPoint === 'function', 'DiffPoints: updateDiffPoint 方法存在');
+            TestRunner.assert(typeof WorkflowEditorModule.removeDiffPoint === 'function', 'DiffPoints: removeDiffPoint 方法存在');
+            TestRunner.assert(typeof WorkflowEditorModule.createDefault === 'function', 'DiffPoints: createDefault 方法存在');
+
+            // Test add/get diffPoint
+            var dp = WorkflowEditorModule.createDefault();
+            dp.eventId = 999;
+            dp.name = 'Test DiffPoint';
+            WorkflowEditorModule.addDiffPoint(dp);
+            TestRunner.assert(WorkflowEditorModule.getDiffPoints().length >= 1, 'DiffPoints: 添加差异点成功');
+            TestRunner.assertNotNull(WorkflowEditorModule.getDiffPoint(dp.id), 'DiffPoints: 通过ID获取差异点');
+
+            // Test remove
+            WorkflowEditorModule.removeDiffPoint(dp.id);
+            TestRunner.assert(WorkflowEditorModule.getDiffPoint(dp.id) === null, 'DiffPoints: 删除差异点成功');
+        }
+
+        function showOutput() {
+            var output = document.getElementById('testOutput');
+            output.style.display = output.style.display === 'none' ? 'block' : 'none';
+            output.textContent = '测试输出已启用，请查看浏览器控制台获取详细日志。';
+        }
+    </script>
+
+    <!-- Load modules -->
+    <script src="../js/core/module-loader.js"></script>
+    <script src="../js/core/canvas-engine.js"></script>
+    <script src="../js/core/history.js"></script>
+    <script src="../js/core/serializer.js"></script>
+    <script src="../js/modules/workflow-template.js"></script>
+    <script src="../js/modules/workflow-editor.js"></script>
+    <script src="../js/modules/scene-canvas.js"></script>
+    <script src="../js/modules/node-tree.js"></script>
+    <script src="../js/modules/property-panel.js"></script>
+    <script src="../js/modules/level-config.js"></script>
+    <script src="../js/modules/config-table.js"></script>
+    <script src="../js/modules/data-io.js"></script>
+</body>
+</html>

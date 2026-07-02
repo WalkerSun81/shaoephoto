@@ -1,0 +1,59 @@
+{
+  "id": "click_spine",
+  "name": "点击动画",
+  "icon": "🎬",
+  "description": "点击后播放Spine动画",
+  "category": "basic",
+  "trigger": {
+    "type": "click",
+    "defaultParams": {
+      "count": 1
+    },
+    "editableParams": [
+      {
+        "key": "clickNode",
+        "label": "点击节点",
+        "type": "node",
+        "required": true
+      }
+    ]
+  },
+  "executors": [
+    {
+      "type": "spine",
+      "executorType": "succ",
+      "priority": 0,
+      "defaultParams": {
+        "loopFlag": false,
+        "finishClose": false
+      },
+      "editableParams": [
+        {
+          "key": "sp",
+          "label": "Spine节点",
+          "type": "node",
+          "required": true
+        },
+        {
+          "key": "animName",
+          "label": "动画名称",
+          "type": "string",
+          "required": true
+        },
+        {
+          "key": "loopFlag",
+          "label": "循环播放",
+          "type": "boolean",
+          "defaultValue": false
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "result": "Collect",
+      "resultType": "succ",
+      "defaultVal": 0
+    }
+  ]
+}

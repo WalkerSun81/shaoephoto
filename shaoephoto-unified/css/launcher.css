@@ -1,0 +1,312 @@
+/**
+ * Green Theme Launcher CSS — NookPhone Style
+ * 绿色主题工具启动页（不跟随系统主题）
+ */
+
+/* ============================================
+   1. Launcher Container
+   ============================================ */
+.launcher-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+    overflow: auto;
+    gap: 32px;
+}
+
+/* Subtle warm glow overlay */
+.launcher-container::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(76, 175, 80, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(129, 199, 132, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(165, 214, 167, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============================================
+   2. NookPhone Frame
+   ============================================ */
+.phone-frame {
+    position: relative;
+    z-index: 1;
+    width: 527px;
+    max-width: 90vw;
+    background: #f1f8e9;
+    border-radius: 80px;
+    box-shadow:
+        0 20px 60px 0 rgba(27, 94, 32, 0.15),
+        inset 0 2px 0 0 rgba(255, 255, 255, 0.5);
+    padding: 48px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.phone-frame:hover {
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   3. Status Bar
+   ============================================ */
+.phone-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0 8px;
+}
+
+.phone-wifi {
+    flex-shrink: 0;
+    width: 40px;
+    height: auto;
+}
+
+.phone-location {
+    flex-shrink: 0;
+    width: 20px;
+    height: auto;
+}
+
+.phone-time {
+    font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2e7d32;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   4. Welcome Text
+   ============================================ */
+.phone-welcome {
+    font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: #1b5e20;
+    text-align: center;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.phone-subtitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #66bb6a;
+    margin-bottom: 36px;
+    text-align: center;
+}
+
+/* ============================================
+   5. App Grid (2x2)
+   ============================================ */
+.phone-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 36px;
+}
+
+/* ============================================
+   6. App Icon Tiles
+   ============================================ */
+.phone-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 40px;
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px 0 rgba(27, 94, 32, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.phone-app::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.phone-app:hover {
+    transform: translateY(-4px) rotate(-2deg) scale(1.08);
+    box-shadow: 0 8px 24px 0 rgba(27, 94, 32, 0.18);
+}
+
+.phone-app:hover::after {
+    width: 80px;
+    height: 80px;
+    top: -25px;
+    right: -25px;
+}
+
+.phone-app:active {
+    transform: translateY(0) scale(1.02);
+    box-shadow: 0 2px 8px 0 rgba(27, 94, 32, 0.08);
+}
+
+/* App icon image */
+.phone-app-icon {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.phone-app:hover .phone-app-icon {
+    transform: scale(1.2);
+}
+
+/* App name */
+.phone-app-name {
+    font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    letter-spacing: 0.02em;
+}
+
+/* ============================================
+   7. Page Indicator
+   ============================================ */
+.phone-page-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.phone-page-indicator svg {
+    opacity: 0.7;
+}
+
+/* ============================================
+   8. Footer
+   ============================================ */
+.launcher-footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: #81c784;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ============================================
+   9. Responsive Layout
+   ============================================ */
+@media (max-width: 600px) {
+    .phone-frame {
+        width: 92vw;
+        border-radius: 56px;
+        padding: 32px 24px 28px;
+    }
+
+    .phone-time {
+        font-size: 22px;
+    }
+
+    .phone-welcome {
+        font-size: 28px;
+    }
+
+    .phone-subtitle {
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+
+    .phone-apps-grid {
+        gap: 20px;
+        max-width: 280px;
+    }
+
+    .phone-app {
+        border-radius: 32px;
+    }
+
+    .phone-app-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .phone-app-name {
+        font-size: 13px;
+    }
+
+    .phone-wifi {
+        width: 36px;
+    }
+
+    .phone-location {
+        width: 18px;
+    }
+}
+
+@media (max-width: 400px) {
+    .launcher-container {
+        padding: 20px 12px;
+    }
+
+    .phone-frame {
+        width: 96vw;
+        border-radius: 44px;
+        padding: 24px 16px 20px;
+    }
+
+    .phone-welcome {
+        font-size: 24px;
+    }
+
+    .phone-apps-grid {
+        gap: 16px;
+        max-width: 240px;
+    }
+
+    .phone-app {
+        border-radius: 28px;
+    }
+
+    .phone-app-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .phone-app-name {
+        font-size: 12px;
+    }
+
+    .phone-time {
+        font-size: 18px;
+    }
+}
+

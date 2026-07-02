@@ -19,3 +19,8 @@ old/
 backup_20260515_124727/
 CHANGELOG.md
 *.bak*
+
+# shaoephoto-unified local artifacts
+shaoephoto-unified/node_modules/
+shaoephoto-unified.zip
+shaoephoto-unified/**/*.backup

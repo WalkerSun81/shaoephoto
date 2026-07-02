@@ -1,0 +1,838 @@
+/**
+ * Apple Theme Override
+ * 通过 CSS 变量覆盖将深色工具主题改为 Apple 浅色风格
+ * 加载在 style.css 之后，用 !important 覆盖原始值
+ */
+
+/* ============================================
+   1. CSS 变量覆盖
+   ============================================ */
+
+:root {
+    --bg: #f5f5f7 !important;
+    --bg2: rgba(255,255,255,0.9) !important;
+    --bg3: #f0f0f2 !important;
+    --accent: #0071e3 !important;
+    --accent2: #34c759 !important;
+    --text: #1d1d1f !important;
+    --text2: #86868b !important;
+    --border: rgba(0,0,0,0.1) !important;
+    --success: #34c759 !important;
+    --warn: #ff9500 !important;
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+            'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* ============================================
+   2. 全局 & Body
+   ============================================ */
+
+html, body {
+    background: #f5f5f7 !important;
+    color: #1d1d1f !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+                 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+::-webkit-scrollbar-track { background: transparent !important; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15) !important; border-radius: 3px !important; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25) !important; }
+
+/* ============================================
+   3. Overlay 全屏容器
+   ============================================ */
+
+.tt-overlay {
+    background: rgba(245,245,247,0.95) !important;
+    color: #1d1d1f !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+                 'Helvetica Neue', Arial, sans-serif !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* ============================================
+   4. Header 顶部栏
+   ============================================ */
+
+.tt-header {
+    background: rgba(255,255,255,0.8) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.tt-header button {
+    background: #f0f0f2 !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    color: #1d1d1f !important;
+}
+
+.tt-header button:hover {
+    background: #e8e8ed !important;
+    border-color: #0071e3 !important;
+    color: #0071e3 !important;
+}
+
+.tt-header button.active {
+    background: #0071e3 !important;
+    border-color: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+.tt-header h1 {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+}
+
+/* ============================================
+   5. Mode Tabs & Toggle Buttons
+   ============================================ */
+
+.tt-mode-tabs {
+    background: rgba(0,0,0,0.04) !important;
+}
+
+.tt-mode-tab {
+    color: #86868b !important;
+}
+
+.tt-mode-tab.active {
+    background: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+.tt-mode-tab:hover:not(.active) {
+    background: rgba(0,0,0,0.06) !important;
+    color: #1d1d1f !important;
+}
+
+.tt-toggle-overlay-btn {
+    background: #f0f0f2 !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    color: #86868b !important;
+}
+
+.tt-toggle-overlay-btn:hover {
+    background: #e8e8ed !important;
+    color: #1d1d1f !important;
+}
+
+.tt-toggle-overlay-btn.active {
+    background: #0071e3 !important;
+    border-color: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   6. Sidebar 侧边栏
+   ============================================ */
+
+.tt-sidebar {
+    background: rgba(255,255,255,0.9) !important;
+    border-right: 1px solid rgba(0,0,0,0.08) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* ============================================
+   7. Main 主内容区
+   ============================================ */
+
+.tt-main {
+    background: repeating-conic-gradient(rgba(0,0,0,0.03) 0% 25%, transparent 0% 50%) 0 0 / 20px 20px !important;
+}
+
+/* ============================================
+   8. Section 区块
+   ============================================ */
+
+.tt-section {
+    border-color: rgba(0,0,0,0.06) !important;
+    background: rgba(255,255,255,0.5) !important;
+    border-style: solid !important;
+}
+
+.tt-section-title {
+    color: #86868b !important;
+}
+
+.tt-section-title::before {
+    background: #0071e3 !important;
+}
+
+.tt-step-title {
+    color: #0071e3 !important;
+    background: rgba(0,113,227,0.06) !important;
+    border-left-color: #0071e3 !important;
+}
+
+.tt-step-num {
+    background: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   9. Buttons 按钮
+   ============================================ */
+
+.tt-btn {
+    background: #f0f0f2 !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    color: #1d1d1f !important;
+    border-radius: 6px !important;
+    transition: all 0.15s ease !important;
+}
+
+.tt-btn:hover {
+    background: #e8e8ed !important;
+    border-color: #0071e3 !important;
+    color: #0071e3 !important;
+}
+
+.tt-btn-primary {
+    background: #0071e3 !important;
+    border-color: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+.tt-btn-primary:hover {
+    background: #0077ed !important;
+    transform: none !important;
+}
+
+.tt-btn-secondary {
+    background: #f0f0f2 !important;
+    border-color: rgba(0,0,0,0.08) !important;
+    color: #1d1d1f !important;
+}
+
+.tt-btn-success {
+    background: #34c759 !important;
+    color: #ffffff !important;
+}
+
+.tt-btn-success:hover {
+    background: #2db84e !important;
+}
+
+/* ============================================
+   10. Inputs 输入框
+   ============================================ */
+
+.tt-input-group label {
+    color: #86868b !important;
+}
+
+.tt-input-group input[type="text"],
+.tt-input-group input[type="number"],
+.tt-input-group select {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    color: #1d1d1f !important;
+    border-radius: 6px !important;
+}
+
+.tt-input-group input:focus,
+.tt-input-group select:focus {
+    border-color: #0071e3 !important;
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.12) !important;
+    outline: none !important;
+}
+
+.tt-input-group input[type="range"] {
+    accent-color: #0071e3 !important;
+}
+
+.tt-range-val {
+    color: #0071e3 !important;
+}
+
+/* ============================================
+   11. Toggle 开关
+   ============================================ */
+
+.tt-toggle-slider {
+    background: #d2d2d7 !important;
+}
+
+.tt-toggle input:checked + .tt-toggle-slider {
+    background: #0071e3 !important;
+}
+
+/* ============================================
+   12. Grid Row
+   ============================================ */
+
+.tt-grid-row label:first-child {
+    color: #86868b !important;
+}
+
+.tt-grid-row input[type="number"] {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    color: #1d1d1f !important;
+}
+
+.tt-grid-input-wrap span {
+    color: #86868b !important;
+}
+
+/* ============================================
+   13. Upload Zone 上传区域
+   ============================================ */
+
+.tt-upload-zone {
+    border-color: rgba(0,0,0,0.12) !important;
+    border-style: dashed !important;
+    border-width: 2px !important;
+    border-radius: 10px !important;
+    background: rgba(255,255,255,0.5) !important;
+    color: #86868b !important;
+}
+
+.tt-upload-zone:hover,
+.tt-upload-zone.dragover {
+    border-color: #0071e3 !important;
+    background: rgba(0,113,227,0.04) !important;
+    color: #0071e3 !important;
+}
+
+/* ============================================
+   14. Info Bar 信息栏
+   ============================================ */
+
+.tt-info-bar {
+    background: rgba(255,255,255,0.85) !important;
+    border-top: 1px solid rgba(0,0,0,0.06) !important;
+    color: #86868b !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.tt-info-bar .tt-val {
+    color: #0071e3 !important;
+}
+
+/* ============================================
+   15. Canvas Hint
+   ============================================ */
+
+.tt-canvas-hint {
+    background: rgba(255,255,255,0.9) !important;
+    color: #86868b !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* ============================================
+   16. Checkbox & Color Pick
+   ============================================ */
+
+.tt-checkbox-row {
+    color: #1d1d1f !important;
+}
+
+.tt-checkbox-row input {
+    accent-color: #0071e3 !important;
+}
+
+.tt-color-pick-row input[type="color"] {
+    border: 2px solid rgba(0,0,0,0.1) !important;
+    border-radius: 6px !important;
+}
+
+/* ============================================
+   17. Region List 区域列表
+   ============================================ */
+
+.tt-region-item {
+    color: #1d1d1f !important;
+    border-left-color: transparent !important;
+}
+
+.tt-region-item:hover {
+    background: rgba(0,113,227,0.04) !important;
+}
+
+.tt-region-item.selected {
+    background: rgba(0,113,227,0.08) !important;
+    border-left-color: #0071e3 !important;
+}
+
+.tt-region-item.inner-checked {
+    background: rgba(52,199,89,0.08) !important;
+    border-left-color: #34c759 !important;
+}
+
+.tt-region-item .tt-info {
+    color: #86868b !important;
+}
+
+.tt-region-item .tt-del {
+    color: #86868b !important;
+}
+
+.tt-region-item .tt-del:hover {
+    background: #ff3b30 !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   18. Toast 通知
+   ============================================ */
+
+.tt-toast {
+    background: #1d1d1f !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    border-left: 3px solid #34c759 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.tt-toast.error {
+    border-left-color: #ff3b30 !important;
+}
+
+/* ============================================
+   19. Empty State 空状态
+   ============================================ */
+
+.tt-empty-state {
+    color: #86868b !important;
+}
+
+/* ============================================
+   20. Merge Grid
+   ============================================ */
+
+.tt-merge-item {
+    background: #f5f5f7 !important;
+}
+
+/* ============================================
+   21. Magnifier 放大镜
+   ============================================ */
+
+.tt-magnifier {
+    border-color: #0071e3 !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* ============================================
+   22. Sub Tabs 子标签
+   ============================================ */
+
+.tt-sub-tab {
+    border-color: rgba(0,0,0,0.08) !important;
+    background: #f0f0f2 !important;
+    color: #86868b !important;
+}
+
+.tt-sub-tab:hover {
+    border-color: #0071e3 !important;
+    color: #0071e3 !important;
+}
+
+.tt-sub-tab.active {
+    background: #0071e3 !important;
+    border-color: #0071e3 !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   23. Region Panel 右侧面板
+   ============================================ */
+
+.tt-region-panel {
+    background: rgba(255,255,255,0.95) !important;
+    border-left: 1px solid rgba(0,0,0,0.08) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.tt-region-panel .tt-rp-header {
+    color: #1d1d1f !important;
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-region-panel .tt-rp-header .tt-rp-fold {
+    color: #86868b !important;
+}
+
+.tt-region-panel .tt-rp-header .tt-rp-fold:hover {
+    color: #0071e3 !important;
+}
+
+.tt-region-panel .tt-rp-toolbar button {
+    background: #f0f0f2 !important;
+    color: #86868b !important;
+}
+
+.tt-region-panel .tt-rp-toolbar button:hover {
+    background: #e8e8ed !important;
+    color: #1d1d1f !important;
+}
+
+.tt-region-panel .tt-rp-footer button {
+    background: #f0f0f2 !important;
+    color: #86868b !important;
+}
+
+.tt-region-panel .tt-rp-footer button:hover {
+    background: #e8e8ed !important;
+    color: #1d1d1f !important;
+}
+
+/* ============================================
+   24. Split Dialog 拆分对话框
+   ============================================ */
+
+.tt-splitdlg-backdrop {
+    background: rgba(0,0,0,0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.tt-splitdlg {
+    background: #ffffff !important;
+    border-color: rgba(0,0,0,0.08) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+    border-radius: 14px !important;
+}
+
+.tt-splitdlg-header {
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-splitdlg-header h2 {
+    color: #0071e3 !important;
+}
+
+.tt-splitdlg-close {
+    color: #86868b !important;
+}
+
+.tt-splitdlg-close:hover {
+    background: #f0f0f2 !important;
+    color: #1d1d1f !important;
+}
+
+.tt-splitdlg-settings {
+    border-right-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-splitdlg-table th {
+    background: #f5f5f7 !important;
+    color: #86868b !important;
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-splitdlg-table td {
+    color: #1d1d1f !important;
+    border-bottom-color: rgba(0,0,0,0.04) !important;
+}
+
+.tt-splitdlg-table tr:hover td {
+    background: rgba(0,0,0,0.02) !important;
+}
+
+.tt-splitdlg-table input[type="text"],
+.tt-splitdlg-table input[type="number"] {
+    background: #f5f5f7 !important;
+    color: #1d1d1f !important;
+    border-color: transparent !important;
+}
+
+.tt-splitdlg-table input:focus {
+    border-color: #0071e3 !important;
+    background: #ffffff !important;
+}
+
+.tt-splitdlg-drag-handle {
+    color: #86868b !important;
+}
+
+.tt-splitdlg-drag-handle:hover {
+    color: #1d1d1f !important;
+}
+
+.tt-splitdlg-row.tt-splitdlg-drag-over td {
+    background: rgba(0,113,227,0.08) !important;
+    border-top-color: #0071e3 !important;
+}
+
+.tt-splitdlg-group-header td {
+    background: #f5f5f7 !important;
+    color: #0071e3 !important;
+}
+
+.tt-splitdlg-footer {
+    border-top-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-splitdlg-inner-dot {
+    background: #34c759 !important;
+}
+
+/* ============================================
+   25. Log Panel 日志面板
+   ============================================ */
+
+.tt-log-panel {
+    background: rgba(255,255,255,0.95) !important;
+    border-left: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.tt-log-header {
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+    color: #0071e3 !important;
+}
+
+.tt-log-header button {
+    border-color: rgba(0,0,0,0.08) !important;
+    color: #86868b !important;
+}
+
+.tt-log-header button:hover {
+    border-color: #0071e3 !important;
+    color: #0071e3 !important;
+}
+
+.tt-log-item {
+    border-bottom-color: rgba(0,0,0,0.04) !important;
+}
+
+.tt-log-item .tt-log-name {
+    color: #1d1d1f !important;
+}
+
+.tt-log-item .tt-log-time {
+    color: #aeaeb2 !important;
+}
+
+/* ============================================
+   26. Right Panel 右侧缩略图面板
+   ============================================ */
+
+.tt-right-panel {
+    background: rgba(255,255,255,0.95) !important;
+    border-left: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.tt-rp-header {
+    color: #0071e3 !important;
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-thumb-item:hover {
+    background: rgba(0,113,227,0.04) !important;
+}
+
+.tt-thumb-item.active {
+    background: rgba(0,113,227,0.08) !important;
+    border-color: #0071e3 !important;
+}
+
+.tt-thumb-name {
+    color: #86868b !important;
+}
+
+.tt-thumb-del:hover {
+    background: #ff3b30 !important;
+    color: #ffffff !important;
+}
+
+.tt-thumb-badge {
+    background: #f0f0f2 !important;
+    color: #86868b !important;
+}
+
+/* ============================================
+   27. Lasso Active
+   ============================================ */
+
+.lasso-active {
+    background: #ff9500 !important;
+    border-color: #ff9500 !important;
+    color: #1d1d1f !important;
+}
+
+/* ============================================
+   28. Progress Bar 进度条
+   ============================================ */
+
+.tt-progress-wrap {
+    background: rgba(0,0,0,0.06) !important;
+}
+
+.tt-progress-bar {
+    background: linear-gradient(90deg, #0071e3, #00c6fb) !important;
+}
+
+/* ============================================
+   29. 内联样式覆盖（_createOverlay 中的硬编码颜色）
+   ============================================ */
+
+/* Header 信息文字 */
+#ttHeaderInfo {
+    color: #86868b !important;
+}
+
+/* Header 进度条背景 */
+#ttHeaderProgress {
+    background: rgba(0,0,0,0.06) !important;
+}
+
+/* Header 进度条填充 */
+#ttHeaderProgressBar {
+    background: linear-gradient(90deg, #0071e3, #00c6fb) !important;
+}
+
+/* 品牌文字 */
+.tt-header span[style*="font-weight:bold"],
+.tt-header span[style*="color:#eee"],
+.tt-header span[style*="color: #eee"] {
+    color: #1d1d1f !important;
+}
+
+/* 删除按钮 */
+[data-action="deleteSelectedSprite"],
+[data-action="deleteSelectedSprite"][style*="color:#e94560"] {
+    color: #ff3b30 !important;
+}
+
+/* ============================================
+   30. Export Dialog 导出对话框
+   ============================================ */
+
+.tt-export-dlg-overlay {
+    background: rgba(0,0,0,0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.tt-export-dlg {
+    background: #ffffff !important;
+    border-color: rgba(0,0,0,0.08) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+}
+
+.tt-export-dlg-header {
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+    color: #0071e3 !important;
+}
+
+.tt-export-dlg-footer {
+    border-top-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-export-table {
+    color: #1d1d1f !important;
+}
+
+.tt-export-table th {
+    color: #86868b !important;
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+.tt-export-table td {
+    border-bottom-color: rgba(0,0,0,0.04) !important;
+}
+
+.tt-export-table input[type="text"] {
+    background: #f5f5f7 !important;
+    border-color: rgba(0,0,0,0.08) !important;
+    color: #1d1d1f !important;
+}
+
+.tt-export-table input:focus {
+    border-color: #0071e3 !important;
+}
+
+.tt-export-group-header td {
+    background: rgba(0,113,227,0.04) !important;
+    color: #0071e3 !important;
+}
+
+/* ============================================
+   31. Saturation Labels 饱和度标签
+   ============================================ */
+
+.tt-sat-label {
+    color: #86868b !important;
+}
+
+.tt-sat-val {
+    color: #0071e3 !important;
+}
+
+/* ============================================
+   32. Radio Row
+   ============================================ */
+
+.tt-radio-row {
+    color: #1d1d1f !important;
+}
+
+.tt-radio-row input[type="radio"] {
+    accent-color: #0071e3 !important;
+}
+
+/* ============================================
+   33. Slider Disabled
+   ============================================ */
+
+.tt-slider-disabled {
+    opacity: 0.35 !important;
+    pointer-events: none !important;
+}
+
+/* ============================================
+   34. Dragging States
+   ============================================ */
+
+.tt-dragging {
+    opacity: 0.4 !important;
+}
+
+.tt-drag-over td {
+    border-bottom-color: #0071e3 !important;
+}
+
+/* ============================================
+   35. Download Dialog
+   ============================================ */
+
+.tt-download-overlay {
+    background: rgba(0,0,0,0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.tt-download-dlg {
+    background: #ffffff !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+}
+
+.tt-download-header {
+    border-bottom-color: rgba(0,0,0,0.06) !important;
+    color: #0071e3 !important;
+}
+
+.tt-download-footer {
+    border-top-color: rgba(0,0,0,0.06) !important;
+}
+
+/* ============================================
+   36. image-adjuster cos-world 容器
+   ============================================ */
+
+#cos-world {
+    background: #f5f5f7 !important;
+}
